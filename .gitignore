@@ -1,0 +1,11 @@
+# OSX
+.DS_Store
+
+# Node.js
+node_modules/
+
+# VIM session
+session.vim
+
+# Tags
+.tags

@@ -1,0 +1,21 @@
+{
+  "name": "timav",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron index.js",
+    "dev": "DEBUG=* electron index.js"
+  },
+  "dependencies": {
+    "electron-prebuilt-compile": "^1.6.2",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "react-hot-loader": "next"
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-react": "^6.10.3"
+  }
+}
