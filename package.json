@@ -4,12 +4,14 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "electron index.js",
-    "dev": "DEBUG=* electron index.js"
+    "start": "electron index.js"
   },
   "dependencies": {
     "electron-prebuilt-compile": "^1.6.2",
+    "google-auth-library": "^0.10.0",
+    "googleapis": "^18.0.0",
     "react": "^15.4.2",
+    "react-autobind": "^1.0.6",
     "react-dom": "^15.4.2",
     "react-hot-loader": "next"
   },

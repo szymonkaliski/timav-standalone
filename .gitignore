@@ -9,3 +9,6 @@ session.vim
 
 # Tags
 .tags
+
+# Google API
+client-secret.json
