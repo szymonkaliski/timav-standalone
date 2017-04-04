@@ -5,21 +5,21 @@ import CREDENTIALS from '../../client-secret.json';
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 
-export const getCalendars = (oauth2Client, callback) => {
+export const getCalendars = (token, callback) => {
   const calendar = google.calendar('v3');
 
   const config = {
-    auth: oauth2Client
+    auth: getOauth2Client(token)
   };
 
   calendar.calendarList.list(config, callback);
 };
 
-export const getEvents = (oauth2Client, calendarId, callback) => {
+export const getEvents = (token, calendarId, callback) => {
   const calendar = google.calendar('v3');
 
   const config = {
-    auth: oauth2Client,
+    auth: getOauth2Client(token),
     calendarId,
     timeMin: new Date().toISOString(),
     maxResults: 100,
@@ -36,9 +36,7 @@ export const getNewToken = (oauth2Client, code, callback) => {
       throw new Error('Error while trying to retrieve access token', err);
     }
 
-    oauth2Client.credentials = token;
-
-    callback(oauth2Client);
+    callback(token);
   });
 };
 
@@ -49,11 +47,17 @@ export const getAuthUrl = oauth2Client => {
   });
 };
 
-export const getOauth2Client = () => {
+export const getOauth2Client = token => {
   const clientId = CREDENTIALS.web.client_id;
   const clientSecret = CREDENTIALS.web.client_secret;
   const redirectUrl = CREDENTIALS.web.redirect_uris[0];
   const auth = new googleAuth();
 
-  return new auth.OAuth2(clientId, clientSecret, redirectUrl);
+  const oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
+
+  if (token) {
+    oauth2Client.credentials = token;
+  }
+
+  return oauth2Client;
 };
