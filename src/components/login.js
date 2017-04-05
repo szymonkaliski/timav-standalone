@@ -38,8 +38,12 @@ class Login extends Component {
       authWindow.destroy();
 
       if (code) {
-        getNewToken(oauth2Client, code, token => {
-          this.props.storeToken(token);
+        getNewToken(oauth2Client, code, (err, token) => {
+          if (!err) {
+            this.props.storeToken(token);
+          } else {
+            throw new Error(err);
+          }
         });
       } else if (error) {
         throw new Error(error);

@@ -15,3 +15,11 @@ export const getSettings = callback => {
 export const storeToken = (token, callback) => {
   db.update({ type: 'settings' }, { $set: { token } }, { upsert: true }, callback);
 };
+
+export const storeSyncToken = (syncToken, callback) => {
+  db.update({ type: 'settings' }, { $set: { syncToken} }, { upsert: true }, callback);
+};
+
+export const storeEvents = (events, callback) => {
+  // TODO: db.insert([event, event, ...], (err) => ...
+};

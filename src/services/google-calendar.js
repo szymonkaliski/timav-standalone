@@ -15,28 +15,72 @@ export const getCalendars = (token, callback) => {
   calendar.calendarList.list(config, callback);
 };
 
-export const getEvents = (token, calendarId, callback) => {
+const getEvents = ({ token, pageToken, syncToken, calendarId, callback }) => {
   const calendar = google.calendar('v3');
 
   const config = {
-    auth: getOauth2Client(token),
     calendarId,
-    timeMin: new Date().toISOString(),
-    maxResults: 100,
-    singleEvents: true,
-    orderBy: 'startTime'
+
+    auth: getOauth2Client(token),
+    maxResults: 1000,
+    singleEvents: true
   };
 
+  if (pageToken) {
+    config.pageToken = pageToken;
+  }
+
+  if (syncToken) {
+    config.syncToken = syncToken;
+  } else {
+    config.timeMin = new Date().toISOString();
+  }
+
   calendar.events.list(config, callback);
+};
+
+const getAllEventsInternal = ({ token, pageToken, syncToken, calendarId, allEvents, callback }) => {
+  getEvents({
+    token,
+    pageToken,
+    syncToken,
+    calendarId,
+    callback: (err, response) => {
+      if (err) {
+        return callback(err);
+      }
+
+      if (!response.nextPageToken) {
+        return callback(null, {
+          events: allEvents.concat(response.items),
+          syncToken: response.nextSyncToken
+        });
+      }
+
+      getAllEventsInternal({
+        token,
+        syncToken,
+        calendarId,
+        callback,
+
+        pageToken: response.nextPageToken,
+        allEvents: allEvents.concat(response.items)
+      });
+    }
+  });
+};
+
+export const getAllEvents = (token, syncToken, calendarId, callback) => {
+  getAllEventsInternal({ token, syncToken, calendarId, allEvents: [], callback });
 };
 
 export const getNewToken = (oauth2Client, code, callback) => {
   oauth2Client.getToken(code, (err, token) => {
     if (err) {
-      throw new Error('Error while trying to retrieve access token', err);
+      callback(err);
     }
 
-    callback(token);
+    callback(null, token);
   });
 };
 

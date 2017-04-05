@@ -4,10 +4,11 @@ export const initFresh = () => ({
   type: 'INIT_FRESH'
 });
 
-export const initSettings = ({ token }) => ({
+export const initSettings = ({ token, syncToken }) => ({
   type: 'INIT_SETTINGS',
   payload: {
-    token
+    token,
+    syncToken
   }
 });
 
@@ -17,6 +18,7 @@ export const getSettings = () =>
       if (err || !settings) {
         dispatch(initFresh());
       } else {
+        console.log({ settings });
         dispatch(initSettings(settings));
       }
     });
@@ -34,6 +36,22 @@ export const storeToken = token =>
     db.storeToken(token, err => {
       if (!err) {
         dispatch(storedToken(token));
+      }
+    });
+  };
+
+export const storedSyncToken = syncToken => ({
+  type: 'STORED_SYNC_TOKEN',
+  payload: {
+    syncToken
+  }
+});
+
+export const storeSyncToken = syncToken =>
+  dispatch => {
+    db.storeSyncToken(syncToken, err => {
+      if (!err) {
+        dispatch(storedSyncToken(syncToken));
       }
     });
   };
