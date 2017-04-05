@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "electron index.js",
-    "start:dev": "NODE_ENV=debug electron index.js"
+    "dev": "DEBUG=*,-babel NODE_ENV=debug electron index.js"
   },
   "dependencies": {
     "electron-prebuilt-compile": "^1.6.2",
