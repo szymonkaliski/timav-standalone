@@ -1,57 +1,106 @@
 import * as db from '../services/db';
+import * as googleCal from '../services/google-calendar';
 
-export const initFresh = () => ({
-  type: 'INIT_FRESH'
-});
+// TODO: rethink action -> db store -> redux store...
 
-export const initSettings = ({ token, syncToken }) => ({
-  type: 'INIT_SETTINGS',
-  payload: {
-    token,
-    syncToken
-  }
-});
+const pick = (fields, obj) => {
+  return Object.keys(obj).reduce(
+    (acc, key) => {
+      if (fields.indexOf(key) >= 0) {
+        acc[key] = obj[key];
+      }
+      return acc;
+    },
+    {}
+  );
+};
+
+const omit = (fields, obj) => {
+  return Object.keys(obj).reduce(
+    (acc, key) => {
+      if (fields.indexOf(key) < 0) {
+        acc[key] = obj[key];
+      }
+      return acc;
+    },
+    {}
+  );
+};
 
 export const getSettings = () =>
   dispatch => {
     db.getSettings((err, settings) => {
       if (err || !settings) {
-        dispatch(initFresh());
+        dispatch({
+          type: 'INIT_FRESH'
+        });
       } else {
-        console.log({ settings });
-        dispatch(initSettings(settings));
+        dispatch({
+          type: 'INIT_WITH_SETTINGS',
+          payload: omit(['_id', 'type'], settings)
+        });
       }
     });
   };
-
-export const storedToken = token => ({
-  type: 'STORED_TOKEN',
-  payload: {
-    token
-  }
-});
 
 export const storeToken = token =>
   dispatch => {
     db.storeToken(token, err => {
       if (!err) {
-        dispatch(storedToken(token));
+        dispatch({
+          type: 'STORE_TOKEN',
+          payload: {
+            token
+          }
+        });
       }
     });
   };
-
-export const storedSyncToken = syncToken => ({
-  type: 'STORED_SYNC_TOKEN',
-  payload: {
-    syncToken
-  }
-});
 
 export const storeSyncToken = syncToken =>
   dispatch => {
     db.storeSyncToken(syncToken, err => {
       if (!err) {
-        dispatch(storedSyncToken(syncToken));
+        dispatch({
+          type: 'STORE_SYNC_TOKEN',
+          payload: {
+            syncToken
+          }
+        });
       }
+    });
+  };
+
+export const getCalendars = () =>
+  (dispatch, getState) => {
+    const token = getState().get('token');
+
+    if (token) {
+      googleCal.getCalendars(token.toJS(), (err, {
+        items
+      }) => {
+        if (!err) {
+          const calendars = items.map(item => pick(['id', 'summary'], item));
+
+          db.storeCalendars(calendars, () => {
+            dispatch({
+              type: 'SET_CALENDARS',
+              payload: {
+                calendars
+              }
+            });
+          });
+        }
+      });
+    }
+  };
+
+export const setTrackingCalendarId = calendarId =>
+  dispatch => {
+    db.storeTrackingCalendarId(calendarId, () => {
+      dispatch({
+        type: 'SET_TRACKING_CALENDAR_ID',
+        payload: { calendarId }
+      });
     });
   };

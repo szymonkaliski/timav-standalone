@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import thunk from 'redux-thunk';
 import { connect, Provider } from 'react-redux';
-import { createStore, applyMiddleware, bindActionCreators } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 
-import { storeSyncToken } from './actions/app'
+// import { storeSyncToken } from './actions/app';
 
-import Login from './components/login';
+import Settings from './components/settings';
 
 import appStore from './reducers';
 import { getSettings } from './actions/app';
@@ -23,48 +23,56 @@ store.dispatch(getSettings());
 //   return hasToken ? <div>welcome</div> : <Login />;
 // };
 
-import { getAllEvents, getCalendars } from './services/google-calendar';
+// import { getAllEvents, getCalendars } from './services/google-calendar';
 
-class App extends Component {
-  componentWillReceiveProps(nextProps) {
-    console.log(nextProps);
+// class App extends Component {
+//   componentWillReceiveProps(nextProps) {
+//     console.log(nextProps);
 
-    if (nextProps.token) {
-      // getCalendars(nextProps.token, (err, cals) => {
-      //   console.log({ err, cals });
-      // })
+//     if (nextProps.token) {
+//       // getCalendars(nextProps.token, (err, cals) => {
+//       //   console.log({ err, cals });
+//       // })
 
-      // getEvents(nextProps.token, 'primary', (err, events) => {
-      //   console.log({ err, events });
-      // });
+//       // getEvents(nextProps.token, 'primary', (err, events) => {
+//       //   console.log({ err, events });
+//       // });
 
-      getAllEvents(nextProps.token, nextProps.syncToken, 'primary', (err, results) => {
-        console.log({ err, results });
+//       // getAllEvents(nextProps.token, nextProps.syncToken, 'primary', (err, results) => {
+//       //   console.log({ err, results });
 
-        if (!err && results.syncToken) {
-          this.props.storeSyncToken(results.syncToken);
-        }
-      });
-    }
+//       //   if (!err && results.syncToken) {
+//       //     this.props.storeSyncToken(results.syncToken);
+//       //   }
+//       // });
+//     }
+//   }
+
+//   render() {
+//     const hasToken = this.props.token !== undefined;
+
+//     return hasToken ? <div>timav</div> : <Login />;
+//   }
+// }
+
+const App = ({ isInitied }) => {
+  if (!isInitied) {
+    return <div>loading...</div>;
+  } else {
+    return <Settings />;
   }
-
-  render() {
-    const hasToken = this.props.token !== undefined;
-
-    return hasToken ? <div>timav</div> : <Login />;
-  }
-}
-
-const mapDispatchToProps = dispatch => bindActionCreators({ storeSyncToken }, dispatch);
+};
 
 const mapStateToProps = state => ({
-  isInitied: state.get('isInited'),
+  isInitied: state.get('isInited')
   // hasToken: state.get('token') !== undefined
-  token: state.get('token'),
-  syncToken: state.get('syncToken')
+  // token: state.get('token'),
+  // syncToken: state.get('syncToken')
 });
 
-const AppConnected = connect(mapStateToProps, mapDispatchToProps)(App);
+// const mapDispatchToProps = dispatch => bindActionCreators({ storeSyncToken }, dispatch);
+
+const AppConnected = connect(mapStateToProps, null)(App);
 
 const AppWithStore = () => (
   <Provider store={store}>

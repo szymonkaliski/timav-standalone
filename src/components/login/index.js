@@ -4,8 +4,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { remote } from 'electron';
 
-import { getOauth2Client, getAuthUrl, getNewToken } from '../services/google-calendar';
-import { storeToken } from '../actions/app';
+import { getOauth2Client, getAuthUrl, getNewToken } from '../../services/google-calendar';
+import { storeToken } from '../../actions/app';
 
 class Login extends Component {
   constructor() {

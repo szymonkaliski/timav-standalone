@@ -12,14 +12,14 @@ export const getSettings = callback => {
   });
 };
 
-export const storeToken = (token, callback) => {
-  db.update({ type: 'settings' }, { $set: { token } }, { upsert: true }, callback);
-};
+const makeSettingsStorer = key =>
+  (item, callback) => db.update({ type: 'settings' }, { $set: { [key]: item } }, { upsert: true }, callback);
 
-export const storeSyncToken = (syncToken, callback) => {
-  db.update({ type: 'settings' }, { $set: { syncToken} }, { upsert: true }, callback);
-};
+export const storeToken = makeSettingsStorer('token');
+export const storeSyncToken = makeSettingsStorer('syncToken');
+export const storeCalendars = makeSettingsStorer('calendars');
+export const storeTrackingCalendarId = makeSettingsStorer('trackingCalendarId');
 
-export const storeEvents = (events, callback) => {
-  // TODO: db.insert([event, event, ...], (err) => ...
-};
+// export const storeEvents = (events, callback) => {
+//   // TODO: db.insert([event, event, ...], (err) => ...
+// };
