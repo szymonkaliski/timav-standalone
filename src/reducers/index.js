@@ -5,7 +5,8 @@ const initialState = fromJS({
   token: undefined,
   syncToken: undefined,
   trackingCalendarId: undefined,
-  calendars: []
+  calendars: [],
+  events: []
 });
 
 export default (state = initialState, action) => {
@@ -31,6 +32,10 @@ export default (state = initialState, action) => {
 
   if (action.type === 'SET_TRACKING_CALENDAR_ID') {
     state = state.set('trackingCalendarId', action.payload.calendarId);
+  }
+
+  if (action.type === 'SET_EVENTS') {
+    state = state.set('events', fromJS(action.payload.events));
   }
 
   console.log('store', state.toJS());

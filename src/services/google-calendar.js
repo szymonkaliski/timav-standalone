@@ -32,9 +32,10 @@ const getEvents = ({ token, pageToken, syncToken, calendarId, callback }) => {
 
   if (syncToken) {
     config.syncToken = syncToken;
-  } else {
-    config.timeMin = new Date().toISOString();
   }
+  // else {
+  //   config.timeMin = new Date().toISOString();
+  // }
 
   calendar.events.list(config, callback);
 };

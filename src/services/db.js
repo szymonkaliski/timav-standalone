@@ -20,6 +20,9 @@ export const storeSyncToken = makeSettingsStorer('syncToken');
 export const storeCalendars = makeSettingsStorer('calendars');
 export const storeTrackingCalendarId = makeSettingsStorer('trackingCalendarId');
 
-// export const storeEvents = (events, callback) => {
-//   // TODO: db.insert([event, event, ...], (err) => ...
-// };
+export const getEvents = callback => db.find({ type: 'event' }, callback);
+
+export const storeEvents = (events, callback) =>
+  db.insert(events.map(event => ({ ...event, type: 'event' })), callback);
+
+export const removeEvents = callback => db.remove({ type: 'event' }, callback);
