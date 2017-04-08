@@ -1,83 +1,84 @@
-import React from 'react';
+import React, { Component } from 'react';
+import path from 'path';
+import { Map } from 'immutable';
+import { remote } from 'electron';
 
+import nedbPersist from 'nedb-persist';
 import thunk from 'redux-thunk';
+import { autoRehydrate, persistStore } from 'redux-persist-immutable';
+import { compose, createStore, applyMiddleware } from 'redux';
 import { connect, Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
 
-// import { storeSyncToken } from './actions/app';
+import reducer from './reducers';
 
 import Settings from './components/settings';
 
-import appStore from './reducers';
-import { getSettings } from './actions/app';
+import { refreshToken } from './services/google-calendar';
+import { setToken } from './actions/app';
 
-const store = createStore(appStore, applyMiddleware(thunk));
+const DB_PATH = path.join(remote.app.getPath('userData'), 'timav.db');
 
-store.dispatch(getSettings());
+const initialStore = Map();
 
-// const App = ({ isInitied, hasToken }) => {
-//   if (!isInitied) {
-//     return null;
-//   }
+const store = createStore(reducer, initialStore, compose(applyMiddleware(thunk), autoRehydrate({ log: true })));
 
-//   return hasToken ? <div>welcome</div> : <Login />;
-// };
+class App extends Component {
+  componentDidMount() {
+    const { token } = this.props;
 
-// import { getAllEvents, getCalendars } from './services/google-calendar';
+    if (token) {
+      refreshToken(token, (err, newToken) => {
+        if (err) {
+          // TODO: remove token and route to Settings
+        } else {
+          this.props.setToken(newToken);
+        }
+      });
+    }
+  }
 
-// class App extends Component {
-//   componentWillReceiveProps(nextProps) {
-//     console.log(nextProps);
+  render() {
+    // const { token } = this.props;
+    // if (token) {
+    //   return <div>has</div>;
+    // }
 
-//     if (nextProps.token) {
-//       // getCalendars(nextProps.token, (err, cals) => {
-//       //   console.log({ err, cals });
-//       // })
-
-//       // getEvents(nextProps.token, 'primary', (err, events) => {
-//       //   console.log({ err, events });
-//       // });
-
-//       // getAllEvents(nextProps.token, nextProps.syncToken, 'primary', (err, results) => {
-//       //   console.log({ err, results });
-
-//       //   if (!err && results.syncToken) {
-//       //     this.props.storeSyncToken(results.syncToken);
-//       //   }
-//       // });
-//     }
-//   }
-
-//   render() {
-//     const hasToken = this.props.token !== undefined;
-
-//     return hasToken ? <div>timav</div> : <Login />;
-//   }
-// }
-
-const App = ({ isInitied }) => {
-  if (!isInitied) {
-    return <div>loading...</div>;
-  } else {
     return <Settings />;
   }
-};
+}
 
 const mapStateToProps = state => ({
-  isInitied: state.get('isInited')
-  // hasToken: state.get('token') !== undefined
-  // token: state.get('token'),
-  // syncToken: state.get('syncToken')
+  token: state.get('token')
 });
 
-// const mapDispatchToProps = dispatch => bindActionCreators({ storeSyncToken }, dispatch);
+const AppConnected = connect(mapStateToProps, { setToken })(App);
 
-const AppConnected = connect(mapStateToProps, null)(App);
+export default class AppProvider extends Component {
+  constructor() {
+    super();
 
-const AppWithStore = () => (
-  <Provider store={store}>
-    <AppConnected />
-  </Provider>
-);
+    this.state = { isInited: false };
+  }
 
-export default AppWithStore;
+  componentWillMount() {
+    const options = { storage: nedbPersist({ filename: DB_PATH }) };
+
+    persistStore(store, options, () => {
+      this.setState({ isInited: true });
+    });
+  }
+
+  render() {
+    const { isInited } = this.state;
+
+    if (!isInited) {
+      return null;
+    }
+
+    return (
+      <Provider store={store}>
+        <AppConnected />
+      </Provider>
+    );
+  }
+}

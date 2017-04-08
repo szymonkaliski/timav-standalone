@@ -1,28 +1,16 @@
 import { fromJS } from 'immutable';
+import { REHYDRATE } from 'redux-persist-immutable/constants';
 
-const initialState = fromJS({
-  isInited: false,
-  token: undefined,
-  syncToken: undefined,
-  trackingCalendarId: undefined,
-  calendars: [],
-  events: []
-});
-
-export default (state = initialState, action) => {
-  if (action.type === 'INIT_WITH_SETTINGS') {
-    state = state.set('isInited', true).merge(fromJS(action.payload));
+export default (state, action) => {
+  if (action.type === REHYDRATE) {
+    state = fromJS(action.payload);
   }
 
-  if (action.type === 'INIT_FRESH') {
-    state = state.set('isInited', true);
+  if (action.type === 'SET_TOKEN') {
+    state = state.set('token', action.payload.token);
   }
 
-  if (action.type === 'STORE_TOKEN') {
-    state = state.set('token', fromJS(action.payload.token));
-  }
-
-  if (action.type === 'STORE_SYNC_TOKEN') {
+  if (action.type === 'SET_SYNC_TOKEN') {
     state = state.set('syncToken', action.payload.syncToken);
   }
 
@@ -38,7 +26,7 @@ export default (state = initialState, action) => {
     state = state.set('events', fromJS(action.payload.events));
   }
 
-  console.log('store', state.toJS());
+  console.log(state.toJS(), action)
 
   return state;
 };

@@ -5,11 +5,12 @@ import { connect } from 'react-redux';
 import { remote } from 'electron';
 
 import { getOauth2Client, getAuthUrl, getNewToken } from '../../services/google-calendar';
-import { storeToken } from '../../actions/app';
+import { setToken } from '../../actions/app';
 
 class Login extends Component {
   constructor() {
     super();
+
     autobind(this);
   }
 
@@ -26,27 +27,28 @@ class Login extends Component {
     const oauth2Client = getOauth2Client();
 
     const authUrl = getAuthUrl(oauth2Client);
-    console.log(authUrl);
 
     authWindow.loadURL(authUrl);
 
     const handleCallback = url => {
       const rawCode = /code=([^&]*)/.exec(url) || null;
       const code = rawCode && rawCode.length > 1 ? rawCode[1] : null;
-      const error = /\?error=(.+)$/.exec(url);
+      const err = /\?error=(.+)$/.exec(url);
 
       authWindow.destroy();
 
       if (code) {
         getNewToken(oauth2Client, code, (err, token) => {
-          if (!err) {
-            this.props.storeToken(token);
-          } else {
-            throw new Error(err);
+          if (err) {
+            // TODO: handle error
+            return console.error(err);
           }
+
+          this.props.setToken(token.access_token);
         });
-      } else if (error) {
-        throw new Error(error);
+      } else if (err) {
+        // TODO: handle error
+        return console.error(err);
       }
     };
 
@@ -66,6 +68,6 @@ class Login extends Component {
   }
 }
 
-const mapDispatchToProps = dispatch => bindActionCreators({ storeToken }, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators({ setToken }, dispatch);
 
 export default connect(null, mapDispatchToProps)(Login);

@@ -85,6 +85,10 @@ export const getNewToken = (oauth2Client, code, callback) => {
   });
 };
 
+export const refreshToken = (token, callback) => {
+  getOauth2Client(token).getAccessToken(callback);
+}
+
 export const getAuthUrl = oauth2Client => {
   return oauth2Client.generateAuthUrl({
     access_type: 'offline',
@@ -101,7 +105,7 @@ export const getOauth2Client = token => {
   const oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
 
   if (token) {
-    oauth2Client.credentials = token;
+    oauth2Client.credentials = { access_token: token };
   }
 
   return oauth2Client;

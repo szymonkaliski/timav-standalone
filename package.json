@@ -12,13 +12,14 @@
     "google-auth-library": "^0.10.0",
     "googleapis": "^18.0.0",
     "immutable": "^3.8.1",
-    "nedb": "^1.8.0",
+    "nedb-persist": "^0.1.2",
     "react": "^15.4.2",
     "react-autobind": "^1.0.6",
     "react-dom": "^15.4.2",
     "react-hot-loader": "next",
     "react-redux": "^5.0.3",
     "redux": "^3.6.0",
+    "redux-persist-immutable": "^4.2.0",
     "redux-thunk": "^2.2.0"
   },
   "devDependencies": {

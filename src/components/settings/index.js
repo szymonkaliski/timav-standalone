@@ -30,7 +30,7 @@ class Settings extends Component {
 }
 
 const mapStateToProps = state => ({
-  calendars: state.get('calendars').toJS(),
+  calendars: state.get('calendars') ? state.get('calendars').toJS() : [],
   trackingCalendarId: state.get('trackingCalendarId')
 });
 
