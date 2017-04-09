@@ -1,97 +1,52 @@
 import * as calendar from '../services/google-calendar';
+import { pick } from '../utils';
 
-export const setToken = token => ({
-  type: 'SET_TOKEN',
-  payload: { token }
+export const routeTo = (path, args) => ({
+  type: 'ROUTE',
+  payload: {
+    path,
+    args
+  }
 });
+
+export const setToken = token =>
+  dispatch => {
+    dispatch({
+      type: 'SET_TOKEN',
+      payload: {
+        token
+      }
+    });
+
+    dispatch(getCalendars());
+    dispatch(getEvents());
+  };
 
 export const setSyncToken = syncToken => ({
   type: 'SET_SYNC_TOKEN',
-  payload: { syncToken }
+  payload: {
+    syncToken
+  }
 });
 
-const pick = (fields, obj) => {
-  return Object.keys(obj).reduce(
-    (acc, key) => {
-      if (fields.indexOf(key) >= 0) {
-        acc[key] = obj[key];
+export const setTrackingCalendarId = calendarId =>
+  dispatch => {
+    dispatch({
+      type: 'SET_TRACKING_CALENDAR_ID',
+      payload: {
+        calendarId
       }
-      return acc;
-    },
-    {}
-  );
-};
+    });
 
-// const omit = (fields, obj) => {
-//   return Object.keys(obj).reduce(
-//     (acc, key) => {
-//       if (fields.indexOf(key) < 0) {
-//         acc[key] = obj[key];
-//       }
-//       return acc;
-//     },
-//     {}
-//   );
-// };
-
-// export const getSettings = () =>
-//   dispatch => {
-//     db.getSettings((err, settings) => {
-//       if (err || !settings) {
-//         dispatch({
-//           type: 'INIT_FRESH'
-//         });
-//       } else {
-//         dispatch({
-//           type: 'INIT_WITH_SETTINGS',
-//           payload: omit(['_id', 'type'], settings)
-//         });
-
-//         dispatch(getEvents());
-//       }
-//     });
-//   };
-
-// export const storeToken = token =>
-//   dispatch => {
-//     db.storeToken(token, err => {
-//       if (err) {
-//         return;
-//       }
-
-//       dispatch({
-//         type: 'STORE_TOKEN',
-//         payload: {
-//           token
-//         }
-//       });
-
-//       dispatch(getCalendars());
-//     });
-//   };
-
-// export const storeSyncToken = syncToken =>
-//   dispatch => {
-//     db.storeSyncToken(syncToken, err => {
-//       if (err) {
-//         return;
-//       }
-
-//       dispatch({
-//         type: 'STORE_SYNC_TOKEN',
-//         payload: {
-//           syncToken
-//         }
-//       });
-//     });
-//   };
+    dispatch(getEvents());
+  };
 
 export const getCalendars = () =>
   (dispatch, getState) => {
     const token = getState().get('token');
 
     if (!token) {
-      return console.err('no token in store');
+      return console.warn('Tried to getCalendars without token set');
     }
 
     calendar.getCalendars(token, (err, response) => {
@@ -110,48 +65,44 @@ export const getCalendars = () =>
     });
   };
 
-export const setTrackingCalendarId = calendarId => ({
-  type: 'SET_TRACKING_CALENDAR_ID',
-  payload: { calendarId }
-});
+export const getEvents = () =>
+  (dispatch, getState) => {
+    const state = getState();
 
-// export const storeEvents = events =>
-//   dispatch => {
-//     db.storeEvents(events, () => {
-//       dispatch({
-//         type: 'SET_EVENTS',
-//         payload: { events }
-//       });
-//     });
-//   };
+    const token = state.get('token');
+    const syncToken = state.get('syncToken');
+    const trackingCalendarId = state.get('trackingCalendarId');
 
-// export const getEvents = () =>
-//   (dispatch, getState) => {
-//     const state = getState();
+    if (!token || !trackingCalendarId) {
+      return console.warn('Tried to getEvents without token or trackingCalendarId set');
+    }
 
-//     const token = state.get('token').toJS();
-//     const syncToken = state.get('syncToken');
-//     const trackingCalendarId = state.get('trackingCalendarId');
+    console.info('Getting events from API...');
 
-//     if (!token || !trackingCalendarId) {
-//       return;
-//     }
+    console.time('getAllEvents');
+    calendar.getAllEvents(token, syncToken, trackingCalendarId, (err, data) => {
+      console.timeEnd('getAllEvents');
 
-//     console.log('getEvents', { token, syncToken });
+      if (err) {
+        return console.error(err);
+      }
 
-//     calendar.getAllEvents(token, syncToken, trackingCalendarId, (err, data) => {
-//       const events = data.events.map(event => ({
-//         start: new Date(event.start.dateTime),
-//         end: new Date(event.end.dateTime),
-//         text: event.summary // TODO: parse into project and tags...
-//       }));
+      const { syncToken } = data;
 
-//       console.log('getAllEvents', { data });
+      console.time('parseEvents');
+      const events = calendar.parseEvents(data.events);
+      console.timeEnd('parseEvents');
 
-//       if (data.syncToken) {
-//         dispatch(storeSyncToken(data.syncToken));
-//       }
+      dispatch(setSyncToken(syncToken));
 
-//       dispatch(storeEvents(events));
-//     });
-//   };
+      console.time('setEvents');
+      dispatch({
+        type: 'SET_EVENTS',
+        payload: {
+          new: events.new,
+          removed: events.removed
+        }
+      });
+      console.timeEnd('setEvents');
+    });
+  };

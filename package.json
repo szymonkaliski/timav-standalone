@@ -12,6 +12,7 @@
     "google-auth-library": "^0.10.0",
     "googleapis": "^18.0.0",
     "immutable": "^3.8.1",
+    "lodash.get": "^4.4.2",
     "nedb-persist": "^0.1.2",
     "react": "^15.4.2",
     "react-autobind": "^1.0.6",

@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
+import get from 'lodash.get';
 import path from 'path';
 import { Map } from 'immutable';
+import { isDebug } from './utils';
 import { remote } from 'electron';
 
 import nedbPersist from 'nedb-persist';
@@ -11,6 +13,8 @@ import { connect, Provider } from 'react-redux';
 
 import reducer from './reducers';
 
+import Nav from './components/nav';
+import Projects from './components/projects';
 import Settings from './components/settings';
 
 import { refreshToken } from './services/google-calendar';
@@ -22,6 +26,18 @@ const initialStore = Map();
 
 const store = createStore(reducer, initialStore, compose(applyMiddleware(thunk), autoRehydrate({ log: true })));
 
+// access store from console for debug
+if (isDebug) {
+  window.getStoreState = () => store.getState().toJS();
+}
+
+const ROUTES = {
+  settings: Settings,
+  projects: Projects,
+  // project: Project
+  default: Settings
+};
+
 class App extends Component {
   componentDidMount() {
     const { token } = this.props;
@@ -30,26 +46,38 @@ class App extends Component {
       refreshToken(token, (err, newToken) => {
         if (err) {
           // TODO: remove token and route to Settings
+          console.error('refreshToken error', err);
         } else {
           this.props.setToken(newToken);
         }
       });
+    } else {
+      // TODO: route to Settings
+      console.info('No token on init...');
     }
   }
 
   render() {
-    // const { token } = this.props;
-    // if (token) {
-    //   return <div>has</div>;
-    // }
+    const { route } = this.props;
+    const Component = ROUTES[get(route, 'path', 'default')];
 
-    return <Settings />;
+    return (
+      <div>
+        <Nav />
+        <Component args={get(route, 'args')} />
+      </div>
+    );
   }
 }
 
-const mapStateToProps = state => ({
-  token: state.get('token')
-});
+const mapStateToProps = state => {
+  const route = state.get('route');
+
+  return {
+    token: state.get('token'),
+    route: route ? route.toJS() : undefined
+  };
+};
 
 const AppConnected = connect(mapStateToProps, { setToken })(App);
 

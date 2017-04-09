@@ -1,6 +1,7 @@
-import { enableLiveReload } from 'electron-compile';
-import { BrowserWindow, app } from 'electron';
 import path from 'path';
+import { BrowserWindow, app } from 'electron';
+import { enableLiveReload } from 'electron-compile';
+import { isDebug } from 'src/utils';
 
 let mainWindow;
 
@@ -13,6 +14,10 @@ const createWindow = () => {
   });
 
   mainWindow.loadURL(`file://${path.join(__dirname, '/renderer/index.html')}`);
+
+  if (isDebug) {
+    mainWindow.openDevTools();
+  }
 
   mainWindow.on('closed', () => {
     mainWindow = null;

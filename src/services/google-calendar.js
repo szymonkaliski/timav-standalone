@@ -1,8 +1,10 @@
 import google from 'googleapis';
 import googleAuth from 'google-auth-library';
+import { flatten, pick } from '../utils.js';
 
 import CREDENTIALS from '../../client-secret.json';
 
+const FULL_DAY_EVENT_DATE_LENGTH = 'yyyy-mm-dd'.length;
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 
 export const getCalendars = (token, callback) => {
@@ -33,9 +35,6 @@ const getEvents = ({ token, pageToken, syncToken, calendarId, callback }) => {
   if (syncToken) {
     config.syncToken = syncToken;
   }
-  // else {
-  //   config.timeMin = new Date().toISOString();
-  // }
 
   calendar.events.list(config, callback);
 };
@@ -87,7 +86,7 @@ export const getNewToken = (oauth2Client, code, callback) => {
 
 export const refreshToken = (token, callback) => {
   getOauth2Client(token).getAccessToken(callback);
-}
+};
 
 export const getAuthUrl = oauth2Client => {
   return oauth2Client.generateAuthUrl({
@@ -110,3 +109,59 @@ export const getOauth2Client = token => {
 
   return oauth2Client;
 };
+
+const parseTitle = title => {
+  const project = title.split('@')[0].trim();
+  const tags = flatten(
+    title.split('@').slice(1).map(tag => {
+      if (tag.indexOf('(') >= 0) {
+        const tagName = tag.match(/(.+)\(/)[1];
+        const subTags = tag.match(/\((.+)(,|\))/)[1];
+
+        return subTags.split(',').map(subTag => ({ tag: tagName, subTag }));
+      } else {
+        return { tag: tag.trim() };
+      }
+    })
+  );
+
+  return { project, tags };
+};
+
+export const parseEvent = event => {
+  // full-day events become markers
+  const isMarker = event.start.date &&
+    event.end.date &&
+    event.start.date.length === FULL_DAY_EVENT_DATE_LENGTH &&
+    event.end.date.length === FULL_DAY_EVENT_DATE_LENGTH;
+
+  const start = new Date(event.start.dateTime);
+  const end = new Date(event.end.dateTime);
+
+  const duration = !isMarker ? end - start : 0;
+  const id = event.id;
+  const note = event.description;
+
+  const { project, tags } = parseTitle(event.summary);
+
+  return {
+    duration,
+    end,
+    id,
+    isMarker,
+    note,
+    project,
+    start,
+    tags
+  };
+};
+
+export const parseEvents = events => ({
+  new: events.filter(({ status }) => status === 'confirmed').reduce((acc, event) => {
+    const parsed = parseEvent(event);
+    acc[parsed.id] = parsed;
+    return acc;
+  }, {}),
+
+  removed: events.filter(({ status }) => status === 'cancelled').map(({ id }) => id)
+});
