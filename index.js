@@ -10,7 +10,8 @@ const createWindow = () => {
 
   mainWindow = new BrowserWindow({
     width: 1280,
-    height: 720
+    height: 720,
+    titleBarStyle: 'hidden-inset'
   });
 
   mainWindow.loadURL(`file://${path.join(__dirname, '/renderer/index.html')}`);

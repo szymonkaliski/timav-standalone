@@ -3,12 +3,11 @@ import { connect } from 'react-redux';
 
 import { routeTo } from '../../actions/app';
 
-const Nav = ({ routeTo }) => (
-  <div>
+const Sidebar = () => (
+  <div className="sidebar">
     <div onClick={() => routeTo('projects')}>Projects</div>
     <div onClick={() => routeTo('settings')}>Settings</div>
-    <hr />
   </div>
 );
 
-export default connect(null, { routeTo })(Nav);
+export default connect(null, { routeTo })(Sidebar);

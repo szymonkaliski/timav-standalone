@@ -13,7 +13,7 @@ import { connect, Provider } from 'react-redux';
 
 import reducer from './reducers';
 
-import Nav from './components/nav';
+import Sidebar from './components/sidebar';
 import Projects from './components/projects';
 import Settings from './components/settings';
 
@@ -66,7 +66,7 @@ class App extends Component {
 
     return (
       <div>
-        <Nav />
+        <Sidebar />
         <Component args={get(route, 'args')} />
       </div>
     );
