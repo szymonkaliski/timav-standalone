@@ -9,12 +9,13 @@ export const routeTo = (path, args) => ({
   }
 });
 
-export const setToken = token =>
+export const setToken = ({ accessToken, refreshToken }) =>
   dispatch => {
     dispatch({
       type: 'SET_TOKEN',
       payload: {
-        token
+        accessToken,
+        refreshToken
       }
     });
 
@@ -43,13 +44,13 @@ export const setTrackingCalendarId = calendarId =>
 
 export const getCalendars = () =>
   (dispatch, getState) => {
-    const token = getState().get('token');
+    const accessToken = getState().get('accessToken');
 
-    if (!token) {
-      return console.warn('Tried to getCalendars without token set');
+    if (!accessToken) {
+      return console.warn('Tried to getCalendars without accessToken set');
     }
 
-    calendar.getCalendars(token, (err, response) => {
+    calendar.getCalendars({ accessToken }, (err, response) => {
       if (err) {
         return console.error(err);
       }
@@ -69,18 +70,18 @@ export const getEvents = () =>
   (dispatch, getState) => {
     const state = getState();
 
-    const token = state.get('token');
+    const accessToken = state.get('accessToken');
     const syncToken = state.get('syncToken');
     const trackingCalendarId = state.get('trackingCalendarId');
 
-    if (!token || !trackingCalendarId) {
-      return console.warn('Tried to getEvents without token or trackingCalendarId set');
+    if (!accessToken|| !trackingCalendarId) {
+      return console.warn('Tried to getEvents without accessToken or trackingCalendarId set');
     }
 
     console.info('Getting events from API...');
 
     console.time('getAllEvents');
-    calendar.getAllEvents(token, syncToken, trackingCalendarId, (err, data) => {
+    calendar.getAllEvents({ accessToken }, syncToken, trackingCalendarId, (err, data) => {
       console.timeEnd('getAllEvents');
 
       if (err) {

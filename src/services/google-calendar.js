@@ -1,29 +1,29 @@
 import google from 'googleapis';
 import googleAuth from 'google-auth-library';
-import { flatten, pick } from '../utils.js';
+import { flatten } from '../utils.js';
 
 import CREDENTIALS from '../../client-secret.json';
 
 const FULL_DAY_EVENT_DATE_LENGTH = 'yyyy-mm-dd'.length;
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 
-export const getCalendars = (token, callback) => {
+export const getCalendars = (tokens, callback) => {
   const calendar = google.calendar('v3');
 
   const config = {
-    auth: getOauth2Client(token)
+    auth: getOauth2Client(tokens)
   };
 
   calendar.calendarList.list(config, callback);
 };
 
-const getEvents = ({ token, pageToken, syncToken, calendarId, callback }) => {
+const getEvents = ({ tokens, pageToken, syncToken, calendarId, callback }) => {
   const calendar = google.calendar('v3');
 
   const config = {
     calendarId,
 
-    auth: getOauth2Client(token),
+    auth: getOauth2Client(tokens),
     maxResults: 1000,
     singleEvents: true
   };
@@ -39,9 +39,9 @@ const getEvents = ({ token, pageToken, syncToken, calendarId, callback }) => {
   calendar.events.list(config, callback);
 };
 
-const getAllEventsInternal = ({ token, pageToken, syncToken, calendarId, allEvents, callback }) => {
+const getAllEventsInternal = ({ tokens, pageToken, syncToken, calendarId, allEvents, callback }) => {
   getEvents({
-    token,
+    tokens,
     pageToken,
     syncToken,
     calendarId,
@@ -58,7 +58,7 @@ const getAllEventsInternal = ({ token, pageToken, syncToken, calendarId, allEven
       }
 
       getAllEventsInternal({
-        token,
+        tokens,
         syncToken,
         calendarId,
         callback,
@@ -70,8 +70,8 @@ const getAllEventsInternal = ({ token, pageToken, syncToken, calendarId, allEven
   });
 };
 
-export const getAllEvents = (token, syncToken, calendarId, callback) => {
-  getAllEventsInternal({ token, syncToken, calendarId, allEvents: [], callback });
+export const getAllEvents = (tokens, syncToken, calendarId, callback) => {
+  getAllEventsInternal({ tokens, syncToken, calendarId, allEvents: [], callback });
 };
 
 export const getNewToken = (oauth2Client, code, callback) => {
@@ -84,8 +84,8 @@ export const getNewToken = (oauth2Client, code, callback) => {
   });
 };
 
-export const refreshToken = (token, callback) => {
-  getOauth2Client(token).getAccessToken(callback);
+export const refreshOauth2Token = (tokens, callback) => {
+  getOauth2Client(tokens).refreshAccessToken(callback);
 };
 
 export const getAuthUrl = oauth2Client => {
@@ -95,7 +95,7 @@ export const getAuthUrl = oauth2Client => {
   });
 };
 
-export const getOauth2Client = token => {
+export const getOauth2Client = ({ accessToken, refreshToken } = {}) => {
   const clientId = CREDENTIALS.web.client_id;
   const clientSecret = CREDENTIALS.web.client_secret;
   const redirectUrl = CREDENTIALS.web.redirect_uris[0];
@@ -103,9 +103,10 @@ export const getOauth2Client = token => {
 
   const oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
 
-  if (token) {
-    oauth2Client.credentials = { access_token: token };
-  }
+  oauth2Client.credentials = {
+    ...(accessToken ? { access_token: accessToken } : undefined),
+    ...(refreshToken ? { refresh_token: refreshToken } : undefined)
+  };
 
   return oauth2Client;
 };

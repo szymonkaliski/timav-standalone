@@ -7,7 +7,15 @@ export default (state, action) => {
   }
 
   if (action.type === 'SET_TOKEN') {
-    state = state.set('token', action.payload.token);
+    const { accessToken, refreshToken } = action.payload;
+
+    if (accessToken) {
+      state = state.set('accessToken', accessToken);
+    }
+
+    if (refreshToken) {
+      state = state.set('refreshToken', refreshToken);
+    }
   }
 
   if (action.type === 'SET_SYNC_TOKEN') {

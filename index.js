@@ -1,7 +1,7 @@
 import path from 'path';
 import { BrowserWindow, app } from 'electron';
 import { enableLiveReload } from 'electron-compile';
-import { isDebug } from 'src/utils';
+import { isDebug } from './src/utils';
 
 let mainWindow;
 

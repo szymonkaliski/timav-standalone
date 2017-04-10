@@ -17,7 +17,7 @@ import Nav from './components/nav';
 import Projects from './components/projects';
 import Settings from './components/settings';
 
-import { refreshToken } from './services/google-calendar';
+import { refreshOauth2Token } from './services/google-calendar';
 import { setToken } from './actions/app';
 
 const DB_PATH = path.join(remote.app.getPath('userData'), 'timav.db');
@@ -40,15 +40,18 @@ const ROUTES = {
 
 class App extends Component {
   componentDidMount() {
-    const { token } = this.props;
+    const { accessToken, refreshToken } = this.props;
 
-    if (token) {
-      refreshToken(token, (err, newToken) => {
+    if (accessToken && refreshToken) {
+      refreshOauth2Token({ accessToken, refreshToken }, (err, newToken) => {
         if (err) {
           // TODO: remove token and route to Settings
           console.error('refreshToken error', err);
         } else {
-          this.props.setToken(newToken);
+          this.props.setToken({
+            accessToken: newToken.access_token,
+            refreshToken: newToken.refresh_token
+          });
         }
       });
     } else {
@@ -74,7 +77,8 @@ const mapStateToProps = state => {
   const route = state.get('route');
 
   return {
-    token: state.get('token'),
+    accessToken: state.get('accessToken'),
+    refreshToken: state.get('refreshToken'),
     route: route ? route.toJS() : undefined
   };
 };

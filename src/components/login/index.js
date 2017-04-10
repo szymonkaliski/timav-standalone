@@ -28,7 +28,9 @@ class Login extends Component {
 
     const authUrl = getAuthUrl(oauth2Client);
 
-    authWindow.loadURL(authUrl);
+    // TODO: remove prompt=consent, used to test refresh_token
+    // authWindow.loadURL(authUrl);
+    authWindow.loadURL(authUrl + '&prompt=consent');
 
     const handleCallback = url => {
       const rawCode = /code=([^&]*)/.exec(url) || null;
@@ -44,7 +46,11 @@ class Login extends Component {
             return console.error(err);
           }
 
-          this.props.setToken(token.access_token);
+          if (!token) {
+            return console.warn('No token?')
+          }
+
+          this.props.setToken({ accessToken: token.access_token, refreshToken: token.refresh_token });
         });
       } else if (err) {
         // TODO: handle error
