@@ -34,7 +34,8 @@ if (isDebug) {
 const ROUTES = {
   settings: Settings,
   projects: Projects,
-  // project: Project
+  // project: Project // + args
+  // chains: Chains
   default: Settings
 };
 
@@ -65,9 +66,12 @@ class App extends Component {
     const Component = ROUTES[get(route, 'path', 'default')];
 
     return (
-      <div>
+      <div className="app">
         <Sidebar />
-        <Component args={get(route, 'args')} />
+
+        <div className="content">
+          <Component args={get(route, 'args')} />
+        </div>
       </div>
     );
   }

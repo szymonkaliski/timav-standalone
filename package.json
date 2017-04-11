@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "electron-prebuilt-compile": "^1.6.2",
+    "font-awesome": "^4.7.0",
     "google-auth-library": "^0.10.0",
     "googleapis": "^18.0.0",
     "immutable": "^3.8.1",

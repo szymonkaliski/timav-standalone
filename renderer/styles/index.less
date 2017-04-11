@@ -1,8 +1,27 @@
+@import "../../node_modules/font-awesome/less/font-awesome.less";
+@fa-font-path: "../../node_modules/font-awesome/fonts";
+
 @import "./sidebar.less";
+
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif
+    !important;
+
+  background: #EEEEEE;
+}
 
 * {
   margin: 0;
   padding: 0;
+}
 
-  background: #EEEEEE;
+.app {
+  display: flex;
+}
+
+.content {
+  padding: 20px;
 }
