@@ -136,8 +136,8 @@ export const parseEvent = event => {
     event.start.date.length === FULL_DAY_EVENT_DATE_LENGTH &&
     event.end.date.length === FULL_DAY_EVENT_DATE_LENGTH;
 
-  const start = new Date(event.start.dateTime);
-  const end = new Date(event.end.dateTime);
+  const start = new Date(event.start.dateTime || event.start.date);
+  const end = new Date(event.end.dateTime || event.end.date);
 
   const duration = !isMarker ? end - start : 0;
   const id = event.id;

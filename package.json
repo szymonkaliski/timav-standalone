@@ -8,6 +8,7 @@
     "dev": "DEBUG=*,-babel NODE_ENV=debug electron index.js"
   },
   "dependencies": {
+    "dateformat": "^2.0.0",
     "electron-prebuilt-compile": "^1.6.2",
     "font-awesome": "^4.7.0",
     "google-auth-library": "^0.10.0",

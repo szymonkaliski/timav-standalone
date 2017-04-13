@@ -55,7 +55,7 @@ export const getCalendars = () =>
         return console.error(err);
       }
 
-      const calendars = response.items.map(item => pick(['id', 'summary'], item));
+      const calendars = response.items.map(pick(['id', 'summary']));
 
       dispatch({
         type: 'SET_CALENDARS',
@@ -74,7 +74,7 @@ export const getEvents = () =>
     const syncToken = state.get('syncToken');
     const trackingCalendarId = state.get('trackingCalendarId');
 
-    if (!accessToken|| !trackingCalendarId) {
+    if (!accessToken || !trackingCalendarId) {
       return console.warn('Tried to getEvents without accessToken or trackingCalendarId set');
     }
 

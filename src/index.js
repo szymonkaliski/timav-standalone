@@ -34,7 +34,6 @@ if (isDebug) {
 const ROUTES = {
   settings: Settings,
   projects: Projects,
-  // project: Project // + args
   // chains: Chains
   default: Settings
 };
