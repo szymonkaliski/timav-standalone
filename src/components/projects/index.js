@@ -1,6 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
+import ProjectDetail from './detail';
+
 import { routeTo } from '../../actions/app';
 import { comparator, minDate, maxDate, stringifyMilliseconds, stringifyDate, stringifyTag } from '../../utils';
 
@@ -33,7 +35,7 @@ const ProjectItem = ({ project, onClick }) => {
 };
 
 const Projects = ({ projects, routeTo, args }) => {
-  const detailProject = projects.find(({ name }) => name === (args && args.projectName));
+  const selectedProject = projects.find(({ name }) => name === (args && args.projectName));
 
   return (
     <div className="projects">
@@ -47,7 +49,7 @@ const Projects = ({ projects, routeTo, args }) => {
         ))}
       </div>
       <div className="project-detail">
-        {detailProject && detailProject.name}
+        {selectedProject && <ProjectDetail project={selectedProject} />}
       </div>
     </div>
   );
@@ -57,37 +59,34 @@ const Projects = ({ projects, routeTo, args }) => {
 const mapStateToProps = state => {
   const events = state.get('events') ? state.get('events').valueSeq().toJS() : [];
 
-  const projectsByName = events.reduce(
-    (acc, event) => {
-      if (!event.project) {
-        return acc;
-      }
-
-      if (!acc[event.project]) {
-        acc[event.project] = {
-          name: event.project,
-          start: event.start,
-          end: event.end,
-          duration: 0,
-          events: [],
-          tags: {}
-        };
-      }
-
-      acc[event.project].events.push(event);
-      acc[event.project].start = minDate(acc[event.project].start, event.start);
-      acc[event.project].end = maxDate(acc[event.project].end, event.end);
-      acc[event.project].duration += event.duration;
-
-      event.tags.forEach(tag => {
-        const tagName = stringifyTag(tag);
-        acc[event.project].tags[tagName] = acc[event.project].tags[tagName] || 0 + event.duration;
-      });
-
+  const projectsByName = events.reduce((acc, event) => {
+    if (!event.project) {
       return acc;
-    },
-    {}
-  );
+    }
+
+    if (!acc[event.project]) {
+      acc[event.project] = {
+        name: event.project,
+        start: event.start,
+        end: event.end,
+        duration: 0,
+        events: [],
+        tags: {}
+      };
+    }
+
+    acc[event.project].events.push(event);
+    acc[event.project].start = minDate(acc[event.project].start, event.start);
+    acc[event.project].end = maxDate(acc[event.project].end, event.end);
+    acc[event.project].duration += event.duration;
+
+    event.tags.forEach(tag => {
+      const tagName = stringifyTag(tag);
+      acc[event.project].tags[tagName] = acc[event.project].tags[tagName] || 0 + event.duration;
+    });
+
+    return acc;
+  }, {});
 
   const projects = Object.keys(projectsByName)
     .map(key => {
