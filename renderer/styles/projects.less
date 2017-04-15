@@ -4,9 +4,11 @@
 }
 
 .project-list {
+  flex-shrink: 0;
   width: 300px;
   max-height: 100vh;
   overflow-y: scroll;
+  overflow-x: hidden;
   color: #202020;
 }
 
@@ -67,9 +69,18 @@
   }
 }
 
+.project-item__selected-icon {
+  float: right;
+  color: #202020;
+  font-size: 22px;
+  margin-top: 38px;
+  margin-right: -1px;
+}
+
 .project-detail {
   background: #202020;
   flex-grow: 1;
+  overflow: hidden;
 }
 
 .project-detail__chart-wrapper {

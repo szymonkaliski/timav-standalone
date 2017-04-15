@@ -47,7 +47,7 @@ class Login extends Component {
           }
 
           if (!token) {
-            return console.warn('No token?')
+            return console.warn('No token?');
           }
 
           this.props.setToken({ accessToken: token.access_token, refreshToken: token.refresh_token });

@@ -131,7 +131,8 @@ const parseTitle = title => {
 
 export const parseEvent = event => {
   // full-day events become markers
-  const isMarker = event.start.date &&
+  const isMarker =
+    event.start.date &&
     event.end.date &&
     event.start.date.length === FULL_DAY_EVENT_DATE_LENGTH &&
     event.end.date.length === FULL_DAY_EVENT_DATE_LENGTH;
@@ -145,16 +146,7 @@ export const parseEvent = event => {
 
   const { project, tags } = parseTitle(event.summary);
 
-  return {
-    duration,
-    end,
-    id,
-    isMarker,
-    note,
-    project,
-    start,
-    tags
-  };
+  return { duration, end, id, isMarker, note, project, start, tags };
 };
 
 export const parseEvents = events => ({

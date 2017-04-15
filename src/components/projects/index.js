@@ -6,29 +6,33 @@ import ProjectDetail from './detail';
 import { routeTo } from '../../actions/app';
 import { comparator, minDate, maxDate, stringifyMilliseconds, stringifyDate, stringifyTag } from '../../utils';
 
-const ProjectItem = ({ project, onClick }) => {
+const ProjectItem = ({ project, onClick, isSelected }) => {
   return (
-    <div className="project-item" onClick={onClick}>
-      <div className="project-item__duration">
-        {stringifyMilliseconds(project.duration)}
-      </div>
+    <div>
+      {isSelected && <i className="project-item__selected-icon fa fa-caret-left" />}
 
-      <div className="project-item__name">
-        {project.name}
-      </div>
+      <div className="project-item" onClick={onClick}>
+        <div className="project-item__duration">
+          {stringifyMilliseconds(project.duration)}
+        </div>
 
-      <div className="project-item__dates">
-        <span className="project-item__date-start">
-          {stringifyDate(project.start)}
-        </span>
-        —
-        <span className="project-item__date-end">
-          {stringifyDate(project.end)}
-        </span>
-      </div>
+        <div className="project-item__name">
+          {project.name}
+        </div>
 
-      <div className="project-item__tags">
-        {project.tags.slice(0, 3).map(({ tag }) => <span key={tag} className="project-item__tag">{tag}</span>)}
+        <div className="project-item__dates">
+          <span className="project-item__date-start">
+            {stringifyDate(project.start)}
+          </span>
+          —
+          <span className="project-item__date-end">
+            {stringifyDate(project.end)}
+          </span>
+        </div>
+
+        <div className="project-item__tags">
+          {project.tags.slice(0, 3).map(({ tag }) => <span key={tag} className="project-item__tag">{tag}</span>)}
+        </div>
       </div>
     </div>
   );
@@ -42,9 +46,10 @@ const Projects = ({ projects, routeTo, args }) => {
       <div className="project-list">
         {projects.map(project => (
           <ProjectItem
+            isSelected={args && args.projectName === project.name}
             key={project.name}
-            project={project}
             onClick={() => routeTo('projects', { projectName: project.name })}
+            project={project}
           />
         ))}
       </div>
