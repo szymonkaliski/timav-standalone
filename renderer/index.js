@@ -13,8 +13,14 @@ const render = () => {
   );
 };
 
+const reloadCSS = () => {
+  const linkHref = document.querySelector('link').href;
+  document.querySelector('link').href = `${linkHref}?t=${new Date().getTime()}`;
+};
+
 render();
 
 if (module.hot) {
   module.hot.accept(render);
+  module.hot.accept(reloadCSS);
 }
