@@ -79,7 +79,15 @@ const Markers = ({ scale, height, project }) => {
     <g>
       {events.map(event => {
         const x = scale(event.start);
-        return <line x1={x} x2={x} y1={26} y2={height - 26} className="project-detail__chart-marker" />;
+
+        return (
+          <g transform={`translate(${x}, 26)`}>
+            <line x1={0} x2={0} y1={0} y2={height - 26 - 26} className="project-detail__chart-marker" />
+            <text x={4} y={-6} className="project-detail__chart-marker-text">
+              {stringifyDateShort(event.start)}{event.note && `: ${event.note}`}
+            </text>
+          </g>
+        );
       })}
     </g>
   );
