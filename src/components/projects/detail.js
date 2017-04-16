@@ -25,15 +25,23 @@ export default class Detail extends Component {
     const { dimensions } = this.state;
     const { project } = this.props;
 
-    const width = Math.floor(dimensions.width);
-    const height = Math.floor(dimensions.height);
+    const margin = 20;
+
+    const width = Math.floor(dimensions.width) - margin;
+    const height = Math.floor(dimensions.height) - margin;
 
     return (
-      <Measure onMeasure={this.onMeasure}>
-        <div className="project-detail__chart-wrapper">
-          {width > 0 && height > 0 && <Chart width={width} height={height} project={project} />}
+      <div className="project-detail__content">
+        <div className="project-detail__info">
+          {project.name}
         </div>
-      </Measure>
+
+        <Measure onMeasure={this.onMeasure}>
+          <div className="project-detail__chart-wrapper">
+            {width > 0 && height > 0 && <Chart width={width} height={height} project={project} />}
+          </div>
+        </Measure>
+      </div>
     );
   }
 }

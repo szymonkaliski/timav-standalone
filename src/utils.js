@@ -22,6 +22,7 @@ export const maxDate = (a, b) => (a > b ? a : b);
 export const stringifyMilliseconds = milliseconds => `${(milliseconds / (1000 * 60 * 60)).toFixed(1)}h`;
 
 export const stringifyDate = date => dateformat(date, 'yyyy-mm-dd');
+export const stringifyDateShort = date => dateformat(date, 'mm/dd');
 
 export const comparator = prop => (a, b) => b[prop] - a[prop];
 
