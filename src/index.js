@@ -13,9 +13,10 @@ import { connect, Provider } from 'react-redux';
 
 import reducer from './reducers';
 
-import Sidebar from './components/sidebar';
+import Chains from './components/chains';
 import Projects from './components/projects';
 import Settings from './components/settings';
+import Sidebar from './components/sidebar';
 
 import { refreshOauth2Token } from './services/google-calendar';
 import { setToken } from './actions/app';
@@ -32,9 +33,10 @@ if (isDebug) {
 }
 
 const ROUTES = {
-  settings: Settings,
+  chains: Chains,
   projects: Projects,
-  // chains: Chains
+  settings: Settings,
+
   default: Settings
 };
 

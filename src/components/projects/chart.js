@@ -101,7 +101,7 @@ const Chart = ({ width, height, project }) => {
   const scaleX = scaleTime().domain([project.start, project.end]).range([margin, width - margin]).nice();
   const ticks = scaleX.ticks(timeScale, 1);
 
-  const calculateHistogram = histogram().value(d => d.start).domain(scaleX.domain()).thresholds(ticks);
+  const calculateHistogram = histogram().value(prop("start")).domain(scaleX.domain()).thresholds(ticks);
 
   const bins = calculateHistogram(project.events.filter(event => !event.isMarker)).map(bin => ({
     ...bin,
