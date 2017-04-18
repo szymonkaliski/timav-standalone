@@ -4,69 +4,87 @@ import { histogram } from 'd3-array';
 import { scaleTime } from 'd3-scale';
 import { timeDay } from 'd3-time';
 
-import { flatten, minDate, maxDate, prop } from '../../utils';
+import { parseProject } from '../../services/google-calendar';
+import { minDate, maxDate, prop } from '../../utils';
 
-const Chains = ({ tags }) => {
-  console.log(tags);
+const CHAINS_CONFIGS_MOCK = ['@health', '@language(js)', '@personal', '@work'];
+
+const Chain = ({ events, match }) => {
+  // TODO: <Measure>
+
+  const matchTags = parseProject(match).tags;
+
+  const tags = events.filter(({ tags }) => {
+    return matchTags.every(match => {
+      const tagMatch = tags.find(({ tag }) => tag === match.tag);
+      const subTagsMatch = match.subTag ? tags.find(({ subTag }) => subTag === match.subTag) : true;
+      return tagMatch && subTagsMatch;
+    });
+  });
+
+  const width = 500;
+  const height = 20;
+
+  const start = tags.reduce((acc, { start }) => minDate(acc, start), new Date());
+  const end = tags.reduce((acc, { start }) => maxDate(acc, start), new Date());
+
+  console.log('start/end tags', tags[0], tags[tags.length - 1], start, end);
+
+  const histogramScale = scaleTime().domain([start, end]).nice(timeDay);
+  const histogramTicks = histogramScale.ticks(timeDay, 1);
+
+  console.log(histogramScale.domain())
+
+  const calculateHistogram = histogram()
+    .value(prop('start'))
+    .domain(histogramScale.domain())
+    .thresholds(histogramTicks);
+
+  const tagHistogram = calculateHistogram(tags);
+
+  // we don't want lines with less than 1px width
+  const finalTagHistogram = tagHistogram.slice(-Math.min(width, tagHistogram.length));
+
+  const scale = scaleTime()
+    .domain([finalTagHistogram[0].x0, finalTagHistogram[finalTagHistogram.length - 1].x0])
+    .range([0, width]);
+
+  console.log({ finalTagHistogram, match })
 
   return (
+    <div>
+      <span style={{ width: 200, display: 'inline-block' }}>
+        {match}
+      </span>
+
+      <svg width={width} height={height}>
+        {finalTagHistogram.map(tagBin => {
+          return (
+            <rect
+              x={Math.floor(scale(tagBin.x0))}
+              y={0}
+              width={Math.floor(width / finalTagHistogram.length)}
+              height={height}
+              fill={tagBin.length > 0 ? 'black' : 'white'}
+            />
+          );
+        })}
+      </svg>
+    </div>
+  );
+};
+
+const Chains = ({ events }) => {
+  return (
     <div className="chains">
-      Chains
+      {CHAINS_CONFIGS_MOCK.map(CONFIG_MOCK => <Chain events={events} match={CONFIG_MOCK} />)}
     </div>
   );
 };
 
 const mapStateToProps = state => {
   const events = state.get('events') ? state.get('events').valueSeq().toJS() : [];
-
-  const allTags = flatten(
-    events.reduce((acc, event) => {
-      if (event.isMarker) {
-        return acc;
-      }
-
-      return [
-        ...acc,
-        event.tags.map(tag => ({
-          ...tag,
-          start: event.start,
-          end: event.end,
-          duration: event.duration
-        }))
-      ];
-    }, [])
-  );
-
-  const groupedTags = allTags.reduce((acc, tag) => {
-    if (!acc[tag.tag]) {
-      acc[tag.tag] = [];
-    }
-
-    acc[tag.tag].push(tag);
-
-    return acc;
-  }, {});
-
-  const tags = Object.keys(groupedTags).reduce((acc, key) => {
-    const tagsList = groupedTags[key];
-
-    const start = tagsList.reduce((acc, { start }) => minDate(acc, start), new Date());
-    const end = tagsList.reduce((acc, { start }) => maxDate(acc, start), new Date());
-
-    const histogramScale = scaleTime().domain([start, end]).nice();
-    const histogramTicks = histogramScale.ticks(timeDay, 1);
-    const calculateHistogram = histogram()
-      .value(prop('start'))
-      .domain(histogramScale.domain())
-      .thresholds(histogramTicks);
-
-    return {
-      ...acc,
-      [key]: calculateHistogram(tagsList)
-    };
-  }, {});
-
-  return { tags };
+  return { events };
 };
 
 const areStatesEqual = (a, b) => a.get('events').equals(b.get('events'));

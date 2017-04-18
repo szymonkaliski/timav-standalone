@@ -111,7 +111,7 @@ export const getOauth2Client = ({ accessToken, refreshToken } = {}) => {
   return oauth2Client;
 };
 
-const parseTitle = title => {
+export const parseProject = title => {
   const project = title.split('@')[0].trim();
   const tags = flatten(
     title.split('@').slice(1).map(tag => {
@@ -144,7 +144,7 @@ export const parseEvent = event => {
   const id = event.id;
   const note = event.description;
 
-  const { project, tags } = parseTitle(event.summary);
+  const { project, tags } = parseProject(event.summary);
 
   return { duration, end, id, isMarker, note, project, start, tags };
 };
