@@ -13,6 +13,8 @@ export const pick = fields => obj => {
   }, {});
 };
 
+export const clamp = (v, min, max) => Math.min(max, Math.max(v, min));
+
 export const isArray = Array.isArray;
 export const flatten = xs => xs.reduce((acc, x) => acc.concat(isArray(x) ? x : [x]), []);
 
