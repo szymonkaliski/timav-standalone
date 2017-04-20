@@ -37,9 +37,23 @@
 }
 
 .chain__graph-bar {
-  fill: transparent;
+  fill: darken(#EEE, 10%);
 }
 
 .chain__graph-bar--filled {
   fill: lighten(#202020, 10%);
+}
+
+.chain__remove {
+  float: right;
+  font-size: 12px;
+  padding: 7px 4px;
+  color: lighten(#202020, 30%);
+  cursor: pointer;
+
+  transition: color 200ms;
+
+  &:hover {
+    color: #202020;
+  }
 }

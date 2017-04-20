@@ -35,7 +35,13 @@ export default class Input extends Component {
 
     return (
       <form onSubmit={this.onSubmit} className="chain__input-form">
-        <input value={text} onChange={this.onChange} className="chain__input" disabled={!editable} />
+        <input
+          value={text}
+          onChange={this.onChange}
+          className="chain__input"
+          disabled={!editable}
+          placeholder="Type @tag to make a graph"
+        />
       </form>
     );
   }
