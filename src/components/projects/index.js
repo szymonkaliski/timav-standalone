@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import ProjectDetail from './detail';
 
-import { routeTo } from '../../actions/app';
+import { routeTo } from '../../actions';
 import { comparator, minDate, maxDate, stringifyMilliseconds, stringifyDate, stringifyTag } from '../../utils';
 
 const ProjectItem = ({ project, onClick, isSelected }) => {

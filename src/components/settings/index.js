@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { getCalendars, setTrackingCalendarId } from '../../actions/app';
+import { getCalendars, setTrackingCalendarId } from '../../actions';
 import Login from '../login';
 
 class Settings extends Component {

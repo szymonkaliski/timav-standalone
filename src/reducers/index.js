@@ -50,6 +50,14 @@ export default (state, action) => {
     });
   }
 
+  if (action.type === 'ADD_CHAIN' || action.type === 'UPDATE_CHAIN') {
+    state = state.setIn(['chains', action.payload.id], action.payload.match);
+  }
+
+  if (action.type === 'REMOVE_CHAIN') {
+    state = state.deleteIn(['chains', action.payload.id]);
+  }
+
   if (action.type === 'ROUTE') {
     state = state.setIn(['route', 'path'], action.payload.path).setIn(['route', 'args'], action.payload.args);
   }

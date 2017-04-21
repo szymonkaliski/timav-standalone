@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { remote } from 'electron';
 
 import { getOauth2Client, getAuthUrl, getNewToken } from '../../services/google-calendar';
-import { setToken } from '../../actions/app';
+import { setToken } from '../../actions';
 
 class Login extends Component {
   constructor() {

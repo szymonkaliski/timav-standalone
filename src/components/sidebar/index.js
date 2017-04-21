@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { routeTo } from '../../actions/app';
+import { routeTo } from '../../actions';
 
 const SidebarItem = ({ active, onClick, icon }) => (
   <div onClick={onClick}>

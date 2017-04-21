@@ -63,23 +63,17 @@ const ChainGraph = ({ events, match, width }) => {
   );
 };
 
-const Chain = ({ events, match, width, editable }) => {
+const Chain = ({ events, match, width, editable, onChangeMatch, onDelete }) => {
   return (
     <div className="chain">
       <div className="chain__input-wrapper">
-        <Input
-          editable={editable !== undefined ? editable : true}
-          text={match}
-          onSubmit={text => {
-            console.log({ text });
-          }}
-        />
+        <Input editable={editable !== undefined ? editable : true} text={match} onSubmit={onChangeMatch} />
       </div>
       <div className="chain__graph-wrapper">
-        {match && <ChainGraph events={events} match={match} width={width - 200 - 4 - 16} />}
+        {match && <ChainGraph events={events} match={match} width={Math.max(0, width - 200 - 4 - 16)} />}
       </div>
       <div className="chain__remove">
-        {match && <i className="fa fa-times" />}
+        {match && <i className="fa fa-times" onClick={onDelete} />}
       </div>
     </div>
   );

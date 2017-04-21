@@ -19,7 +19,7 @@ import Settings from './components/settings';
 import Sidebar from './components/sidebar';
 
 import { refreshOauth2Token } from './services/google-calendar';
-import { setToken } from './actions/app';
+import { setToken } from './actions';
 
 const DB_PATH = path.join(remote.app.getPath('userData'), 'timav.db');
 

@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 
 import Chain from './chain';
 
-const CHAINS_CONFIGS_MOCK = ['@health', '@health(meditation)', '@personal @writing', '@personal', '@work'];
+import { addChain, updateChain, removeChain } from '../../actions';
 
 class Chains extends Component {
   constructor() {
@@ -26,16 +26,23 @@ class Chains extends Component {
 
   render() {
     const { dimensions } = this.state;
-    const { events } = this.props;
+    const { events, chains, addChain, updateChain, removeChain } = this.props;
 
     return (
       <Measure onMeasure={this.onMeasure}>
         <div className="chains">
-          {dimensions.width > 0 &&
-            CHAINS_CONFIGS_MOCK.map(CONFIG_MOCK => (
-              <Chain width={dimensions.width} events={events} match={CONFIG_MOCK} />
-            ))}
-          <Chain width={dimensions.width} events={events} />
+          {chains.map(([id, match]) => (
+            <Chain
+              key={id}
+              width={dimensions.width}
+              events={events}
+              match={match}
+              onChangeMatch={match => updateChain(id, match)}
+              onDelete={() => removeChain(id)}
+            />
+          ))}
+
+          <Chain width={dimensions.width} events={events} onChangeMatch={addChain} match="" />
         </div>
       </Measure>
     );
@@ -43,10 +50,10 @@ class Chains extends Component {
 }
 
 const mapStateToProps = state => {
+  const chains = state.get('chains') ? state.get('chains').entrySeq().toJS() : [];
   const events = state.get('events') ? state.get('events').valueSeq().toJS() : [];
-  return { events };
+
+  return { events, chains };
 };
 
-const areStatesEqual = (a, b) => a.get('events').equals(b.get('events'));
-
-export default connect(mapStateToProps, null, null, { areStatesEqual })(Chains);
+export default connect(mapStateToProps, { addChain, updateChain, removeChain })(Chains);

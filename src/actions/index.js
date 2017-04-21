@@ -1,3 +1,5 @@
+import uuid from 'uuid';
+
 import * as calendar from '../services/google-calendar';
 import { pick } from '../utils';
 
@@ -103,3 +105,26 @@ export const getEvents = () => (dispatch, getState) => {
     console.timeEnd('setEvents');
   });
 };
+
+export const addChain = match => ({
+  type: 'ADD_CHAIN',
+  payload: {
+    id: uuid.v4(),
+    match
+  }
+});
+
+export const updateChain = (id, match) => ({
+  type: 'UPDATE_CHAIN',
+  payload: {
+    id,
+    match
+  }
+});
+
+export const removeChain = id => ({
+  type: 'REMOVE_CHAIN',
+  payload: {
+    id
+  }
+});
