@@ -25,7 +25,7 @@ const GridY = ({ scale, ticks, width = 10 }) => {
     <g>
       {ticks.map(tick => {
         const y = scale(tick);
-        return <line x1={0} x2={width} y1={y} y2={y} className="project-detail__chart-grid-y-tick" />;
+        return <line key={tick} x1={0} x2={width} y1={y} y2={y} className="project-detail__chart-grid-y-tick" />;
       })}
     </g>
   );
@@ -36,7 +36,7 @@ const GridX = ({ scale, ticks, height = 10 }) => {
     <g>
       {ticks.map(tick => {
         const x = scale(tick);
-        return <line x1={x} x2={x} y1={0} y2={height} className="project-detail__chart-grid-x-tick" />;
+        return <line key={tick} x1={x} x2={x} y1={0} y2={height} className="project-detail__chart-grid-x-tick" />;
       })}
     </g>
   );
@@ -48,7 +48,7 @@ const AxisX = ({ scale, ticks }) => {
       {ticks.map(tick => {
         const x = scale(tick);
         return (
-          <text x={x} y={0} className="project-detail__chart-axis-x-tick">
+          <text key={tick} x={x} y={0} className="project-detail__chart-axis-x-tick">
             {stringifyDateShort(tick)}
           </text>
         );
@@ -63,7 +63,7 @@ const AxisY = ({ scale, ticks }) => {
       {ticks.slice(1).map(tick => {
         const y = scale(tick);
         return (
-          <text x={0} y={y + 3} className="project-detail__chart-axis-y-tick">
+          <text key={tick} x={0} y={y + 3} className="project-detail__chart-axis-y-tick">
             {stringifyMilliseconds(tick)}
           </text>
         );
@@ -81,7 +81,7 @@ const Markers = ({ scale, height, project }) => {
         const x = scale(event.start);
 
         return (
-          <g transform={`translate(${x}, 26)`}>
+          <g key={event.id} transform={`translate(${x}, 26)`}>
             <line x1={0} x2={0} y1={0} y2={height - 26 - 26} className="project-detail__chart-marker" />
             <text x={4} y={-6} className="project-detail__chart-marker-text">
               {stringifyDateShort(event.start)}{event.note && `: ${event.note}`}

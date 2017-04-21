@@ -49,6 +49,7 @@ const ChainGraph = ({ events, match, width }) => {
 
         return (
           <rect
+            key={tagBin.x0}
             x={Math.floor(scale(tagBin.x0))}
             y={0}
             width={width}
