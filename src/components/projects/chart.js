@@ -98,10 +98,13 @@ const Chart = ({ width, height, project }) => {
 
   const timeScale = spreadToTimeScale(project);
 
-  const scaleX = scaleTime().domain([project.start, project.end]).range([margin, width - margin]).nice();
+  const endDate = new Date(project.end);
+  endDate.setDate(endDate.getDate() + 1);
+
+  const scaleX = scaleTime().domain([project.start, endDate]).range([margin, width - margin]).nice();
   const ticks = scaleX.ticks(timeScale, 1);
 
-  const calculateHistogram = histogram().value(prop("start")).domain(scaleX.domain()).thresholds(ticks);
+  const calculateHistogram = histogram().value(prop('start')).domain(scaleX.domain()).thresholds(ticks);
 
   const bins = calculateHistogram(project.events.filter(event => !event.isMarker)).map(bin => ({
     ...bin,
