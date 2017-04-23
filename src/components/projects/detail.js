@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import autobind from 'react-autobind';
 
 import Chart from './chart';
+import { stringifyMilliseconds } from '../../utils';
 
 export default class Detail extends Component {
   constructor() {
@@ -33,7 +34,17 @@ export default class Detail extends Component {
     return (
       <div className="project-detail__content">
         <div className="project-detail__info">
-          {project.name}
+          <div className="project-detail__events">
+            {project.events.length} {project.events.length === 1 ? 'log' : 'logs'}
+          </div>
+
+          <div className="project-detail__duration">
+            {stringifyMilliseconds(project.duration)}
+          </div>
+
+          <div className="project-detail__name">
+            {project.name}
+          </div>
         </div>
 
         <Measure onMeasure={this.onMeasure}>

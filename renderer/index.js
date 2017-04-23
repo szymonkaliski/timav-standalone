@@ -14,9 +14,9 @@ const render = () => {
 };
 
 const reloadCSS = () => {
-  const linkHref = document.querySelector('link').href;
-
-  document.querySelector('link').href = `${linkHref}?t=${new Date().getTime()}`;
+  document.querySelectorAll('link').forEach(link => {
+    link.href = `${link.href}?t=${new Date().getTime()}`;
+  });
 };
 
 render();
