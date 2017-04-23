@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import Chain from './chain';
 
 import { addChain, updateChain, removeChain } from '../../actions';
+import { minDate } from '../../utils';
 
 class Chains extends Component {
   constructor() {
@@ -28,6 +29,9 @@ class Chains extends Component {
     const { dimensions } = this.state;
     const { events, chains, addChain, updateChain, removeChain } = this.props;
 
+    const startDate = events.reduce((acc, { start }) => minDate(acc, start), new Date());
+    const endDate = new Date();
+
     return (
       <Measure onMeasure={this.onMeasure}>
         <div className="chains">
@@ -39,6 +43,8 @@ class Chains extends Component {
               match={match}
               onChangeMatch={match => updateChain(id, match)}
               onDelete={() => removeChain(id)}
+              startDate={startDate}
+              endDate={endDate}
             />
           ))}
 

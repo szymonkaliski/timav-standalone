@@ -5,7 +5,6 @@
 
 .chain {
   width: 100%;
-  height: 26px;
   border-bottom: 1px solid darken(#EEE, 20%);
 
   &:hover {
@@ -13,27 +12,27 @@
   }
 }
 
+.chain__content {
+  padding: 10px;
+}
+
 .chain__input-wrapper {
-  display: inline-block;
-  float: left;
 }
 
 .chain__graph-wrapper {
-  display: inline-block;
 }
 
 .chain__input {
   border: none;
   background: transparent;
-  padding: 5px 8px;
+  padding: 5px 0px;
   font-size: 12px;
-  width: 200px;
+  width: 50%;
 
   outline: none;
 }
 
 .chain__graph {
-  margin-top: 9px;
 }
 
 .chain__graph-bar {
@@ -47,7 +46,7 @@
 .chain__remove {
   float: right;
   font-size: 12px;
-  padding: 7px 4px;
+  padding: 4px;
   color: lighten(#202020, 30%);
   cursor: pointer;
 
