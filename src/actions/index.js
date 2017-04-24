@@ -39,8 +39,26 @@ export const setTrackingCalendarId = calendarId => dispatch => {
     }
   });
 
-  dispatch(getEvents());
+  dispatch(resetEvents());
 };
+
+export const setCashTag = cashTag => dispatch => {
+  dispatch({
+    type: 'SET_CASH_TAG',
+    payload: {
+      cashTag
+    }
+  });
+
+  dispatch(resetEvents());
+};
+
+export const setCurrencySymbol = currencySymbol => ({
+  type: 'SET_CURRENCY_SYMBOL',
+  payload: {
+    currencySymbol
+  }
+});
 
 export const getCalendars = () => (dispatch, getState) => {
   const accessToken = getState().get('accessToken');
@@ -65,12 +83,23 @@ export const getCalendars = () => (dispatch, getState) => {
   });
 };
 
+export const resetEvents = () => dispatch => {
+  console.log('reset...');
+
+  dispatch({
+    type: 'RESET_EVENTS'
+  });
+
+  getEvents();
+};
+
 export const getEvents = () => (dispatch, getState) => {
   const state = getState();
 
   const accessToken = state.get('accessToken');
   const syncToken = state.get('syncToken');
   const trackingCalendarId = state.get('trackingCalendarId');
+  const cashTag = state.get('cashTag');
 
   if (!accessToken || !trackingCalendarId) {
     return console.warn('Tried to getEvents without accessToken or trackingCalendarId set');
@@ -89,7 +118,7 @@ export const getEvents = () => (dispatch, getState) => {
     const { syncToken } = data;
 
     console.time('parseEvents');
-    const events = calendar.parseEvents(data.events);
+    const events = calendar.parseEvents(data.events, { cashTag });
     console.timeEnd('parseEvents');
 
     dispatch(setSyncToken(syncToken));

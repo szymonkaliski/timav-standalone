@@ -1,3 +1,4 @@
+import formatCurrency from 'format-currency';
 import dateformat from 'dateformat';
 
 export const isDebug = process.env.NODE_ENV === 'debug';
@@ -29,3 +30,5 @@ export const stringifyDateShort = date => dateformat(date, 'mm/dd');
 export const comparator = prop => (a, b) => b[prop] - a[prop];
 
 export const stringifyTag = tag => `${tag.tag}${tag.subTag ? `: ${tag.subTag}` : ''}`;
+
+export const stringifyCash = num => formatCurrency(num);

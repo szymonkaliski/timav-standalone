@@ -4,9 +4,17 @@ import { connect } from 'react-redux';
 import ProjectDetail from './detail';
 
 import { routeTo } from '../../actions';
-import { comparator, minDate, maxDate, stringifyMilliseconds, stringifyDate, stringifyTag } from '../../utils';
+import {
+  comparator,
+  minDate,
+  maxDate,
+  stringifyMilliseconds,
+  stringifyDate,
+  stringifyCash,
+  stringifyTag
+} from '../../utils';
 
-const ProjectItem = ({ project, onClick, isSelected }) => {
+const ProjectItem = ({ project, onClick, isSelected, currencySymbol }) => {
   return (
     <div>
       {isSelected && <i className="project-item__selected-icon fa fa-caret-left" />}
@@ -19,6 +27,11 @@ const ProjectItem = ({ project, onClick, isSelected }) => {
         <div className="project-item__name">
           {project.name}
         </div>
+
+        {project.cash > 0 &&
+          <div className="project-item__cash-h">
+            {stringifyCash(project.cash / (project.duration / (1000 * 60 * 60)))}{currencySymbol}/h
+          </div>}
 
         <div className="project-item__dates">
           <span className="project-item__date-start">
@@ -38,7 +51,7 @@ const ProjectItem = ({ project, onClick, isSelected }) => {
   );
 };
 
-const Projects = ({ projects, routeTo, args }) => {
+const Projects = ({ projects, currencySymbol, routeTo, args }) => {
   const selectedProject = projects.find(({ name }) => name === (args && args.projectName));
 
   return (
@@ -50,11 +63,12 @@ const Projects = ({ projects, routeTo, args }) => {
             key={project.name}
             onClick={() => routeTo('projects', { projectName: project.name })}
             project={project}
+            currencySymbol={currencySymbol}
           />
         ))}
       </div>
       <div className="project-detail">
-        {selectedProject && <ProjectDetail project={selectedProject} />}
+        {selectedProject && <ProjectDetail project={selectedProject} currencySymbol={currencySymbol} />}
       </div>
     </div>
   );
@@ -75,6 +89,7 @@ const mapStateToProps = state => {
         start: event.start,
         end: event.end,
         duration: 0,
+        cash: 0,
         events: [],
         tags: {}
       };
@@ -87,7 +102,9 @@ const mapStateToProps = state => {
 
     event.tags.forEach(tag => {
       const tagName = stringifyTag(tag);
+
       acc[event.project].tags[tagName] = acc[event.project].tags[tagName] || 0 + event.duration;
+      acc[event.project].cash += tag.cash || 0;
     });
 
     return acc;
@@ -106,7 +123,10 @@ const mapStateToProps = state => {
     .filter(({ duration }) => duration > 0)
     .sort(comparator('end'));
 
-  return { projects };
+  return {
+    projects,
+    currencySymbol: state.get('currencySymbol')
+  };
 };
 
 const areStatesEqual = (a, b) => a.get('events').equals(b.get('events'));

@@ -1,3 +1,4 @@
+import get from 'lodash.get';
 import google from 'googleapis';
 import googleAuth from 'google-auth-library';
 import { flatten } from '../utils.js';
@@ -111,13 +112,17 @@ export const getOauth2Client = ({ accessToken, refreshToken } = {}) => {
   return oauth2Client;
 };
 
-export const parseProject = title => {
+export const parseProject = (title, options) => {
   const project = title.split('@')[0].trim();
   const tags = flatten(
     title.split('@').slice(1).map(tag => {
       if (tag.indexOf('(') >= 0) {
         const tagName = tag.match(/(.+)\(/)[1];
         const subTags = tag.match(/\((.+)(,|\))/)[1];
+
+        if (tagName === get(options, ['cashTag'], '').replace('@', '')) {
+          return { tag: tagName, cash: parseFloat(subTags) };
+        }
 
         return subTags.split(',').map(subTag => ({ tag: tagName, subTag }));
       } else {
@@ -129,7 +134,7 @@ export const parseProject = title => {
   return { project, tags };
 };
 
-export const parseEvent = event => {
+export const parseEvent = (event, options) => {
   // full-day events become markers
   const isMarker =
     event.start.date &&
@@ -144,14 +149,14 @@ export const parseEvent = event => {
   const id = event.id;
   const note = event.description;
 
-  const { project, tags } = parseProject(event.summary);
+  const { project, tags } = parseProject(event.summary, options);
 
   return { duration, end, id, isMarker, note, project, start, tags };
 };
 
-export const parseEvents = events => ({
+export const parseEvents = (events, options) => ({
   new: events.filter(({ status }) => status === 'confirmed').reduce((acc, event) => {
-    const parsed = parseEvent(event);
+    const parsed = parseEvent(event, options);
     acc[parsed.id] = parsed;
     return acc;
   }, {}),

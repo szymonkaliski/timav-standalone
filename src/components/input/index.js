@@ -30,17 +30,17 @@ export default class Input extends Component {
   }
 
   render() {
-    const { editable } = this.props;
+    const { editable, formClassName, className, placeholder } = this.props;
     const { text } = this.state;
 
     return (
-      <form onSubmit={this.onSubmit} className="chain__input-form">
+      <form onSubmit={this.onSubmit} className={formClassName}>
         <input
           value={text}
           onChange={this.onChange}
-          className="chain__input"
-          disabled={!editable}
-          placeholder="Type @tag to make a graph"
+          className={className}
+          disabled={editable === undefined ? false : !editable}
+          placeholder={placeholder}
         />
       </form>
     );

@@ -3,8 +3,9 @@ import { area, curveStepAfter } from 'd3-shape';
 import { histogram } from 'd3-array';
 import { scaleLinear, scaleTime } from 'd3-scale';
 import { timeDay, timeWeek, timeMonth } from 'd3-time';
+import { get } from 'lodash';
 
-import { prop, stringifyMilliseconds, stringifyDateShort } from '../../utils';
+import { prop, stringifyMilliseconds, stringifyDateShort, stringifyCash } from '../../utils';
 
 const durationInDays = duration => Math.ceil(duration / (1000 * 60 * 60) / 24);
 
@@ -72,19 +73,22 @@ const AxisY = ({ scale, ticks }) => {
   );
 };
 
-const Markers = ({ scale, height, project }) => {
+const Markers = ({ scale, height, project, currencySymbol }) => {
   const events = project.events.filter(prop('isMarker'));
 
   return (
     <g>
       {events.map(event => {
         const x = scale(event.start);
+        const cash = get(event, ['tags', 0, 'cash']);
 
         return (
           <g key={event.id} transform={`translate(${x}, 26)`}>
             <line x1={0} x2={0} y1={0} y2={height - 26 - 26} className="project-detail__chart-marker" />
             <text x={4} y={-6} className="project-detail__chart-marker-text">
-              {stringifyDateShort(event.start)}{event.note && `: ${event.note}`}
+              {stringifyDateShort(event.start)}
+              {event.note && `: ${event.note}`}
+              {cash && `: ${stringifyCash(cash)}${currencySymbol}`}
             </text>
           </g>
         );
@@ -93,7 +97,7 @@ const Markers = ({ scale, height, project }) => {
   );
 };
 
-const Chart = ({ width, height, project }) => {
+const Chart = ({ width, height, project, currencySymbol }) => {
   const margin = 26;
 
   const timeScale = spreadToTimeScale(project);
@@ -126,7 +130,7 @@ const Chart = ({ width, height, project }) => {
   return (
     <svg className="project-detail__chart" width={width} height={height}>
       <path d={path} className="project-detail__chart-path" />
-      <Markers scale={scaleX} height={height} project={project} />
+      <Markers scale={scaleX} height={height} project={project} currencySymbol={currencySymbol} />
 
       <GridX scale={scaleX} ticks={ticks} height={height} />
       <GridY scale={scaleY} ticks={scaleY.ticks()} width={width} />

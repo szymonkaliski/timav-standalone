@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { getCalendars, setTrackingCalendarId } from '../../actions';
+import { getCalendars, setTrackingCalendarId, setCashTag, setCurrencySymbol } from '../../actions';
+
+import Input from '../input';
 import Login from '../login';
 
 class Settings extends Component {
@@ -12,17 +14,37 @@ class Settings extends Component {
   }
 
   render() {
-    const { calendars, trackingCalendarId } = this.props;
+    const { calendars, trackingCalendarId, cashTag, currencySymbol } = this.props;
 
     return (
-      <div>
+      <div className="settings">
         Settings
+
         <Login />
-        {calendars.map(({ id, summary }) => (
-          <div key={id} onClick={() => this.props.setTrackingCalendarId(id)}>
-            {trackingCalendarId === id && '* '}{summary}
-          </div>
-        ))}
+
+        <div className="settings__calendars">
+          {calendars.map(({ id, summary }) => (
+            <div className="settings__calendar" key={id} onClick={() => this.props.setTrackingCalendarId(id)}>
+              {trackingCalendarId === id && '* '}{summary}
+            </div>
+          ))}
+        </div>
+
+        <Input
+          text={cashTag}
+          onSubmit={this.props.setCashTag}
+          formClassName="settings__input-form-cash"
+          className="settings__input-cash"
+          placeholder="@tag for cash"
+        />
+
+        <Input
+          text={currencySymbol}
+          onSubmit={this.props.setCurrencySymbol}
+          formClassName="settings__input-form-cash"
+          className="settings__input-cash"
+          placeholder="currency symbold for cash"
+        />
       </div>
     );
   }
@@ -30,10 +52,14 @@ class Settings extends Component {
 
 const mapStateToProps = state => ({
   calendars: state.get('calendars') ? state.get('calendars').toJS() : [],
-  trackingCalendarId: state.get('trackingCalendarId')
+  trackingCalendarId: state.get('trackingCalendarId'),
+  cashTag: state.get('cashTag'),
+  currencySymbol: state.get('currencySymbol')
 });
 
 export default connect(mapStateToProps, {
   getCalendars,
-  setTrackingCalendarId
+  setTrackingCalendarId,
+  setCashTag,
+  setCurrencySymbol
 })(Settings);

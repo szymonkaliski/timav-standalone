@@ -7,7 +7,7 @@ import { timeDay } from 'd3-time';
 import { parseProject } from '../../services/google-calendar';
 import { clamp, minDate, maxDate, prop } from '../../utils';
 
-import Input from './input';
+import Input from '../input';
 
 const TICK_PX_WIDTH = 4;
 
@@ -75,7 +75,14 @@ const Chain = ({ events, match, width, editable, startDate, endDate, onChangeMat
         {match && <i className="fa fa-times" onClick={onDelete} />}
       </div>
       <div className="chain__input-wrapper">
-        <Input editable={editable !== undefined ? editable : true} text={match} onSubmit={onChangeMatch} />
+        <Input
+          editable={editable !== undefined ? editable : true}
+          text={match}
+          onSubmit={onChangeMatch}
+          formClassName="chain__input-form"
+          className="chain__input"
+          placeholder="Type @tag to make a graph"
+        />
       </div>
       <div className="chain__graph-wrapper">
         {match &&

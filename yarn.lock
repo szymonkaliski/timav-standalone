@@ -1902,6 +1902,18 @@ form-data@~2.1.1:
     combined-stream "^1.0.5"
     mime-types "^2.1.12"
 
+format-currency@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/format-currency/-/format-currency-1.0.0.tgz#f907943f390c2ff36be2a51b0a6fb25ad3fe01c8"
+  dependencies:
+    format-num "^1.0.0"
+
+format-num@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/format-num/-/format-num-1.0.0.tgz#a0314cc47301212a061e76cf15ead8e614207077"
+  dependencies:
+    parse-num "^1.0.0"
+
 fs-extra@^0.30.0:
   version "0.30.0"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-0.30.0.tgz#f233ffcc08d4da7d432daa449776989db1df93f0"
@@ -2945,6 +2957,10 @@ parse-json@^2.2.0:
   resolved "https://registry.yarnpkg.com/parse-json/-/parse-json-2.2.0.tgz#f480f40434ef80741f8469099f8dea18f55a4dc9"
   dependencies:
     error-ex "^1.2.0"
+
+parse-num@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/parse-num/-/parse-num-1.0.0.tgz#abd8b339c157a23d3ef87953ceb11f1dd08059d0"
 
 parse5@^1.5.1:
   version "1.5.1"

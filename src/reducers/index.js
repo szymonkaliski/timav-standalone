@@ -27,8 +27,19 @@ export default (state, action) => {
   }
 
   if (action.type === 'SET_TRACKING_CALENDAR_ID') {
-    // TODO: if different tracking calendar id set then clear events and sync token for fresh re-sync
     state = state.set('trackingCalendarId', action.payload.calendarId);
+  }
+
+  if (action.type === 'SET_CASH_TAG') {
+    state = state.set('cashTag', action.payload.cashTag);
+  }
+
+  if (action.type === 'SET_CURRENCY_SYMBOL') {
+    state = state.set('currencySymbol', action.payload.currencySymbol);
+  }
+
+  if (action.type === 'RESET_EVENTS') {
+    state = state.delete('events');
   }
 
   if (action.type === 'SET_EVENTS') {
