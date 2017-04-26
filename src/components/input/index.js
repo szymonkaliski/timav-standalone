@@ -18,7 +18,11 @@ export default class Input extends Component {
   }
 
   onChange(e) {
-    this.setState({ text: e.target.value });
+    this.setState({ text: e.target.value }, () => {
+      if (this.props.onChange) {
+        this.props.onChange(this.state.text);
+      }
+    });
   }
 
   onSubmit(e) {

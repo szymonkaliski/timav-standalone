@@ -3,13 +3,40 @@
   width: 100%;
 }
 
-.project-list {
+.project-sidebar {
+  display: flex;
   flex-shrink: 0;
-  width: 300px;
+  flex-direction: column;
+
   max-height: 100vh;
+}
+
+.project-search {
+  display: flex;
+}
+
+.project-search__form {
+  width: 100%;
+}
+
+.project-search__input {
+  padding: 8px 12px;
+  width: 100%;
+  font-size: 14px;
+  border: none;
+  border-bottom: 1px solid lighten(#202020, 60%);
+  background: darken(#EEE, 10%);
+  color: #202020;
+  outline: none;
+}
+
+.project-list {
+  width: 300px;
   overflow-y: scroll;
   overflow-x: hidden;
   color: #202020;
+
+  max-height: 100%;
 }
 
 .project-item {

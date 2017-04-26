@@ -92,7 +92,5 @@ export default (state, action) => {
     state = state.setIn(['route', 'path'], action.payload.path).setIn(['route', 'args'], action.payload.args);
   }
 
-  console.info(action);
-
   return state;
 };

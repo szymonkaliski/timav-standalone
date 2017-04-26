@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { Component } from 'react';
+import autobind from 'react-autobind';
 import { connect } from 'react-redux';
 
+import Input from '../input';
 import ProjectDetail from './detail';
 
 import { routeTo } from '../../actions';
@@ -51,30 +53,61 @@ const ProjectItem = ({ project, onClick, isSelected, currencySymbol }) => {
   );
 };
 
-const Projects = ({ projects, currencySymbol, routeTo, args }) => {
-  const selectedProject = projects.find(({ name }) => name === (args && args.projectName));
+class Projects extends Component {
+  constructor() {
+    super();
+    autobind(this);
 
-  return (
-    <div className="projects">
-      <div className="project-list">
-        {projects.map(project => (
-          <ProjectItem
-            isSelected={args && args.projectName === project.name}
-            key={project.name}
-            onClick={() => routeTo('projects', { projectName: project.name })}
-            project={project}
-            currencySymbol={currencySymbol}
-          />
-        ))}
-      </div>
-      <div className="project-detail">
-        {selectedProject && <ProjectDetail project={selectedProject} currencySymbol={currencySymbol} />}
-      </div>
-    </div>
-  );
-};
+    this.state = { filterText: '' };
+  }
 
-// TODO: merge projects with cash leter on
+  onFilterTextChange(filterText) {
+    this.setState({ filterText });
+  }
+
+  render() {
+    const { projects, currencySymbol, routeTo, args } = this.props;
+    const { filterText } = this.state;
+
+    const selectedProject = projects.find(({ name }) => name === (args && args.projectName));
+
+    const filteredProjects = projects.filter(
+      ({ name }) => (filterText ? name.toLowerCase().indexOf(filterText.toLowerCase()) >= 0 : true)
+    );
+
+    return (
+      <div className="projects">
+        <div className="project-sidebar">
+          <div className="project-search">
+            <Input
+              formClassName="project-search__form"
+              className="project-search__input"
+              placeholder="Filter Projects..."
+              onChange={this.onFilterTextChange}
+            />
+          </div>
+
+          <div className="project-list">
+            {filteredProjects.map(project => (
+              <ProjectItem
+                isSelected={args && args.projectName === project.name}
+                key={project.name}
+                onClick={() => routeTo('projects', { projectName: project.name })}
+                project={project}
+                currencySymbol={currencySymbol}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="project-detail">
+          {selectedProject && <ProjectDetail project={selectedProject} currencySymbol={currencySymbol} />}
+        </div>
+      </div>
+    );
+  }
+}
+
 const mapStateToProps = state => {
   const events = state.get('events') ? state.get('events').valueSeq().toJS() : [];
 
