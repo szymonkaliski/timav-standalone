@@ -129,6 +129,4 @@ const mapStateToProps = state => {
   };
 };
 
-const areStatesEqual = (a, b) => a.get('events').equals(b.get('events'));
-
-export default connect(mapStateToProps, { routeTo }, null, { areStatesEqual })(Projects);
+export default connect(mapStateToProps, { routeTo })(Projects);

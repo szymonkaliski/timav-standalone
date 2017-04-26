@@ -30,6 +30,15 @@ export default (state, action) => {
     state = state.set('trackingCalendarId', action.payload.calendarId);
   }
 
+  if (action.type === 'RESET_TOKEN_AND_RELATED_SETTINGS') {
+    state = state
+      .delete('accessToken')
+      .delete('refreshToken')
+      .delete('syncToken')
+      .delete('trackingCalendarId')
+      .delete('calendars');
+  }
+
   if (action.type === 'SET_CASH_TAG') {
     state = state.set('cashTag', action.payload.cashTag);
   }
@@ -42,27 +51,37 @@ export default (state, action) => {
     state = state.delete('events');
   }
 
+  if (action.type === 'EVENTS_DOWNLOAD_STARTED') {
+    state = state.set('isDownloadingEvents', true);
+  }
+
   if (action.type === 'SET_EVENTS') {
     const newEvents = fromJS(action.payload.new);
     const removedEvents = action.payload.removed;
 
-    state = state.update('events', events => {
-      if (!events) {
-        return newEvents;
-      }
+    state = state
+      .update('events', events => {
+        if (!events) {
+          return newEvents;
+        }
 
-      // remove removed events by id
-      events = removedEvents.reduce((acc, id) => events.delete(id), events);
+        // remove removed events by id
+        events = removedEvents.reduce((acc, id) => events.delete(id), events);
 
-      // merge with new events from sync
-      events = events.merge(newEvents);
+        // merge with new events from sync
+        events = events.merge(newEvents);
 
-      return events;
-    });
+        return events;
+      })
+      .set('isDownloadingEvents', false);
   }
 
   if (action.type === 'ADD_CHAIN' || action.type === 'UPDATE_CHAIN') {
-    state = state.setIn(['chains', action.payload.id], action.payload.match);
+    const { match } = action.payload;
+
+    if (match && match.length > 0) {
+      state = state.setIn(['chains', action.payload.id], match);
+    }
   }
 
   if (action.type === 'REMOVE_CHAIN') {
@@ -72,6 +91,8 @@ export default (state, action) => {
   if (action.type === 'ROUTE') {
     state = state.setIn(['route', 'path'], action.payload.path).setIn(['route', 'args'], action.payload.args);
   }
+
+  console.info(action);
 
   return state;
 };

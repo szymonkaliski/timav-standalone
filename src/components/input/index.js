@@ -38,6 +38,7 @@ export default class Input extends Component {
         <input
           value={text}
           onChange={this.onChange}
+          onBlur={this.onSubmit}
           className={className}
           disabled={editable === undefined ? false : !editable}
           placeholder={placeholder}

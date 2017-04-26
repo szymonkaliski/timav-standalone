@@ -28,9 +28,7 @@ class Login extends Component {
 
     const authUrl = getAuthUrl(oauth2Client);
 
-    // TODO: remove prompt=consent, used to test refresh_token
-    // authWindow.loadURL(authUrl);
-    authWindow.loadURL(authUrl + '&prompt=consent');
+    authWindow.loadURL(authUrl);
 
     const handleCallback = url => {
       const rawCode = /code=([^&]*)/.exec(url) || null;
@@ -65,10 +63,10 @@ class Login extends Component {
 
   render() {
     return (
-      <div>
-        <button onClick={this.authGoogleCalendar}>
-          Authorize Google Calendar Access
-        </button>
+      <div className="login__wrapper">
+        <div className="login__button" onClick={this.authGoogleCalendar}>
+          Login to Google Calendar
+        </div>
       </div>
     );
   }

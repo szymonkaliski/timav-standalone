@@ -1,0 +1,77 @@
+.settings__wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  -webkit-box-align: center;
+
+  height: 100vh;
+}
+
+.settings {
+  flex: none;
+  min-width: 300px;
+
+  -webkit-box-flex: 0;
+
+  background: darken(#EEE, 10%);
+  padding: 20px;
+}
+
+.login__wrapper {
+  padding: 8px;
+  border: 1px solid lighten(#202020, 60%);
+
+  cursor: pointer;
+  transition: background 200ms;
+
+  &:hover {
+    background: darken(#EEE, 20%);
+  }
+}
+
+.login__button {
+  font-size: 12px;
+  text-align: center;
+}
+
+.settings__info {
+  color: #202020;
+  font-size: 14px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid lighten(#202020, 60%);
+  margin-bottom: 10px;
+}
+
+.settings__calendars {
+  margin-top: 20px;
+}
+
+.settings__input-form-cash {
+  margin-top: 4px;
+}
+
+.settings__input-cash {
+  font-size: 12px;
+  padding: 4px 6px;
+  border: 1px solid lighten(#202020, 60%);
+  background: #EEE;
+  width: 100%;
+}
+
+.settings__calendar {
+  font-size: 12px;
+  padding: 4px 6px;
+
+  cursor: pointer;
+  transition: background 200ms;
+
+  &:hover {
+    background: darken(#EEE, 20%);
+  }
+}
+
+.settings__calendar-active {
+  background: darken(#EEE, 20%);
+}

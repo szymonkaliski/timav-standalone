@@ -42,6 +42,10 @@ export const setTrackingCalendarId = calendarId => dispatch => {
   dispatch(resetEvents());
 };
 
+export const resetTokenAndRelatedSettings = {
+  type: 'RESET_TOKEN_AND_RELATED_SETTINGS'
+};
+
 export const setCashTag = cashTag => dispatch => {
   dispatch({
     type: 'SET_CASH_TAG',
@@ -84,13 +88,11 @@ export const getCalendars = () => (dispatch, getState) => {
 };
 
 export const resetEvents = () => dispatch => {
-  console.log('reset...');
-
   dispatch({
     type: 'RESET_EVENTS'
   });
 
-  getEvents();
+  dispatch(getEvents());
 };
 
 export const getEvents = () => (dispatch, getState) => {
@@ -104,6 +106,10 @@ export const getEvents = () => (dispatch, getState) => {
   if (!accessToken || !trackingCalendarId) {
     return console.warn('Tried to getEvents without accessToken or trackingCalendarId set');
   }
+
+  dispatch({
+    type: 'EVENTS_DOWNLOAD_STARTED'
+  });
 
   console.info('Getting events from API...');
 

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import classNames from 'classnames';
 import { connect } from 'react-redux';
 
 import { getCalendars, setTrackingCalendarId, setCashTag, setCurrencySymbol } from '../../actions';
@@ -13,21 +14,45 @@ class Settings extends Component {
     }
   }
 
-  render() {
-    const { calendars, trackingCalendarId, cashTag, currencySymbol } = this.props;
+  renderCalendars() {
+    const { calendars, trackingCalendarId } = this.props;
+
+    if (calendars.length === 0) {
+      return null;
+    }
 
     return (
-      <div className="settings">
-        Settings
+      <div className="settings__calendars">
+        <div className="settings__info">
+          Select calendar with tracking data
+        </div>
 
-        <Login />
+        {calendars.map(({ id, summary }) => (
+          <div
+            className={classNames('settings__calendar', {
+              'settings__calendar-active': trackingCalendarId === id
+            })}
+            key={id}
+            onClick={() => this.props.setTrackingCalendarId(id)}
+          >
+            {summary}
+          </div>
+        ))}
+      </div>
+    );
+  }
 
-        <div className="settings__calendars">
-          {calendars.map(({ id, summary }) => (
-            <div className="settings__calendar" key={id} onClick={() => this.props.setTrackingCalendarId(id)}>
-              {trackingCalendarId === id && '* '}{summary}
-            </div>
-          ))}
+  renderCashSettings() {
+    const { accessToken, cashTag, currencySymbol } = this.props;
+
+    if (!accessToken) {
+      return null;
+    }
+
+    return (
+      <div className="settings__cash">
+        <div className="settings__info">
+          Set cash-related info
         </div>
 
         <Input
@@ -48,9 +73,25 @@ class Settings extends Component {
       </div>
     );
   }
+
+  render() {
+    const { accessToken } = this.props;
+
+    return (
+      <div className="settings__wrapper">
+        <div className="settings">
+          {!accessToken && <Login />}
+
+          {this.renderCashSettings()}
+          {this.renderCalendars()}
+        </div>
+      </div>
+    );
+  }
 }
 
 const mapStateToProps = state => ({
+  accessToken: state.get('accessToken'),
   calendars: state.get('calendars') ? state.get('calendars').toJS() : [],
   trackingCalendarId: state.get('trackingCalendarId'),
   cashTag: state.get('cashTag'),

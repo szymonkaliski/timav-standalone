@@ -19,7 +19,7 @@ import Settings from './components/settings';
 import Sidebar from './components/sidebar';
 
 import { refreshOauth2Token } from './services/google-calendar';
-import { setToken } from './actions';
+import { setToken, routeTo, resetTokenAndRelatedSettings } from './actions';
 
 const DB_PATH = path.join(remote.app.getPath('userData'), 'timav.db');
 
@@ -35,9 +35,7 @@ if (isDebug) {
 const ROUTES = {
   chains: Chains,
   projects: Projects,
-  settings: Settings,
-
-  default: Settings
+  settings: Settings
 };
 
 class App extends Component {
@@ -47,8 +45,9 @@ class App extends Component {
     if (accessToken && refreshToken) {
       refreshOauth2Token({ accessToken, refreshToken }, (err, newToken) => {
         if (err) {
-          // TODO: remove token and route to Settings
           console.error('refreshToken error', err);
+          this.props.resetTokenAndRelatedSettings();
+          this.props.routeTo('settings');
         } else {
           this.props.setToken({
             accessToken: newToken.access_token,
@@ -56,22 +55,31 @@ class App extends Component {
           });
         }
       });
-    } else {
-      // TODO: route to Settings
-      console.info('No token on init...');
     }
   }
 
+  renderDownloadingOverlay() {
+    return (
+      <div className="downloading-overlay">
+        <div className="downloading-overlay__text">
+          Downloading events...
+        </div>
+      </div>
+    );
+  }
+
   render() {
-    const { route } = this.props;
-    const Component = ROUTES[get(route, 'path', 'default')];
+    const { route, isDownloadingEvents } = this.props;
+    const Component = ROUTES[get(route, 'path')];
 
     return (
       <div className="app">
+        {isDownloadingEvents && this.renderDownloadingOverlay()}
+
         <Sidebar />
 
         <div className="content">
-          <Component args={get(route, 'args')} />
+          {Component && <Component args={get(route, 'args')} />}
         </div>
       </div>
     );
@@ -84,11 +92,12 @@ const mapStateToProps = state => {
   return {
     accessToken: state.get('accessToken'),
     refreshToken: state.get('refreshToken'),
+    isDownloadingEvents: state.get('isDownloadingEvents'),
     route: route ? route.toJS() : undefined
   };
 };
 
-const AppConnected = connect(mapStateToProps, { setToken })(App);
+const AppConnected = connect(mapStateToProps, { setToken, routeTo, resetTokenAndRelatedSettings })(App);
 
 export default class AppProvider extends Component {
   constructor() {

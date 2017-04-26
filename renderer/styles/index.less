@@ -1,6 +1,17 @@
 @import "../../node_modules/font-awesome/less/font-awesome.less";
 @fa-font-path: "../../node_modules/font-awesome/fonts";
 
+@keyframes pulse-animation {
+  0%   { opacity: 1.0; }
+  50%  { opacity: 0.7; }
+  100% { opacity: 1.0; }
+}
+
+@keyframes fade-animation {
+  from { opacity: 0.0; }
+  to   { opacity: 1.0; }
+}
+
 body {
   font-family:
     -apple-system, BlinkMacSystemFont,
@@ -22,4 +33,32 @@ body {
 
 .content {
   width: 100%;
+}
+
+.downloading-overlay {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  background: fade(#202020, 90%);
+
+  pointer-events: all;
+
+  animation: fade-animation 500ms;
+}
+
+.downloading-overlay__text {
+  position: relative;
+
+  color: #EEE;
+  font-size: 12px;
+  text-align: center;
+
+  top: 50%;
+  transform: translate(0, -50%);
+
+  animation: pulse-animation 1000ms infinite;
 }
