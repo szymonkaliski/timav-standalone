@@ -3,7 +3,7 @@ import get from 'lodash.get';
 import path from 'path';
 import { Map } from 'immutable';
 import { isDebug } from './utils';
-import { remote } from 'electron';
+import { remote, ipcRenderer } from 'electron';
 
 import nedbPersist from 'nedb-persist';
 import thunk from 'redux-thunk';
@@ -33,8 +33,8 @@ if (isDebug) {
 }
 
 const ROUTES = {
-  chains: Chains,
   projects: Projects,
+  chains: Chains,
   settings: Settings
 };
 
@@ -56,6 +56,9 @@ class App extends Component {
         }
       });
     }
+
+    // routes from shortcuts in main app menu
+    ipcRenderer.on('route', (_, page) => this.props.routeTo(page));
   }
 
   renderDownloadingOverlay() {
