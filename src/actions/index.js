@@ -42,9 +42,9 @@ export const setTrackingCalendarId = calendarId => dispatch => {
   dispatch(resetEvents());
 };
 
-export const resetTokenAndRelatedSettings = {
+export const resetTokenAndRelatedSettings = () => ({
   type: 'RESET_TOKEN_AND_RELATED_SETTINGS'
-};
+});
 
 export const setCashTag = cashTag => dispatch => {
   dispatch({
@@ -118,7 +118,10 @@ export const getEvents = () => (dispatch, getState) => {
     console.timeEnd('getAllEvents');
 
     if (err) {
-      return console.error(err);
+      console.error(err);
+      dispatch(resetTokenAndRelatedSettings());
+
+      return;
     }
 
     const { syncToken } = data;

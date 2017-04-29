@@ -28,9 +28,16 @@ class Login extends Component {
 
     const authUrl = getAuthUrl(oauth2Client);
 
+    console.log({ authUrl });
+
     authWindow.loadURL(authUrl);
 
     const handleCallback = url => {
+      // allow navigating to other google-related pages
+      if (url.indexOf('accounts.google') >= 0) {
+        return;
+      }
+
       const rawCode = /code=([^&]*)/.exec(url) || null;
       const code = rawCode && rawCode.length > 1 ? rawCode[1] : null;
       const err = /\?error=(.+)$/.exec(url);

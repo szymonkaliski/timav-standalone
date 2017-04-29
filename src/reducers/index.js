@@ -36,6 +36,7 @@ export default (state, action) => {
       .delete('refreshToken')
       .delete('syncToken')
       .delete('trackingCalendarId')
+      .delete('isDownloadingEvents')
       .delete('calendars');
   }
 

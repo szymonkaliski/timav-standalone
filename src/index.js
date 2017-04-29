@@ -46,6 +46,7 @@ class App extends Component {
       refreshOauth2Token({ accessToken, refreshToken }, (err, newToken) => {
         if (err) {
           console.error('refreshToken error', err);
+
           this.props.resetTokenAndRelatedSettings();
           this.props.routeTo('settings');
         } else {
@@ -110,7 +111,10 @@ export default class AppProvider extends Component {
   }
 
   componentWillMount() {
-    const options = { storage: nedbPersist({ filename: DB_PATH }) };
+    const options = {
+      storage: nedbPersist({ filename: DB_PATH }),
+      blacklist: ['isDownloadingEvents']
+    };
 
     persistStore(store, options, () => {
       this.setState({ isInited: true });

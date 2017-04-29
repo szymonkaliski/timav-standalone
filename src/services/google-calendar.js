@@ -92,6 +92,7 @@ export const refreshOauth2Token = (tokens, callback) => {
 export const getAuthUrl = oauth2Client => {
   return oauth2Client.generateAuthUrl({
     access_type: 'offline',
+    prompt: 'consent',
     scope: SCOPES
   });
 };
