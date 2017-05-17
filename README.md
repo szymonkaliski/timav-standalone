@@ -14,4 +14,5 @@ Timav is work-in-progress, and is intentend to be a starting point to build your
 
 1. clone this repo
 2. `yarn` or `npm install`
-3. `yarn run dev` or `npm run dev` for development, alternatively `yarn start` or `npm start` if you just want to run it
+3. create `client-secret.json` (follow *step 1* of https://developers.google.com/google-apps/calendar/quickstart/nodejs, and save file as `client-secret.json` in root directory)
+4. `yarn run dev` or `npm run dev` for development, alternatively `yarn start` or `npm start` if you just want to run it
