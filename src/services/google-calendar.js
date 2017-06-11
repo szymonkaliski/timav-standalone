@@ -98,9 +98,16 @@ export const getAuthUrl = oauth2Client => {
 };
 
 export const getOauth2Client = ({ accessToken, refreshToken } = {}) => {
-  const clientId = CREDENTIALS.web.client_id;
-  const clientSecret = CREDENTIALS.web.client_secret;
-  const redirectUrl = CREDENTIALS.web.redirect_uris[0];
+  const credentials = CREDENTIALS.web || CREDENTIALS.installed;
+
+  if (!credentials) {
+    throw new Error("client-secret.json doesn't exist in root folder!");
+  }
+
+  const clientId = credentials.client_id;
+  const clientSecret = credentials.client_secret;
+  const redirectUrl = credentials.redirect_uris[0];
+
   const auth = new googleAuth();
 
   const oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
