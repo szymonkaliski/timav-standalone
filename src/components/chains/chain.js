@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import findIndex from 'lodash.findindex';
 import { histogram } from 'd3-array';
 import { scaleTime } from 'd3-scale';
 import { timeDay } from 'd3-time';
@@ -11,8 +12,7 @@ import Input from '../input';
 
 const TICK_PX_WIDTH = 4;
 
-const ChainGraph = ({ events, match, width, startDate, endDate }) => {
-  const height = 8;
+const calculateHistogram = ({ events, match, startDate, endDate }) => {
   const matchTags = parseProject(match).tags;
 
   const tags = events.filter(({ tags }) => {
@@ -35,6 +35,32 @@ const ChainGraph = ({ events, match, width, startDate, endDate }) => {
     .thresholds(histogramTicks);
 
   const tagHistogram = calculateHistogram(tags);
+
+  return tagHistogram;
+};
+
+const calculateLongestStreak = ({ tagHistogram }) => {
+  const { longestStreak } = tagHistogram.reduce(
+    (acc, bin) => {
+      const currentStreak = bin.length > 0 ? acc.currentStreak + 1 : 0;
+      const longestStreak = bin.length === 0 ? Math.max(acc.currentStreak, acc.longestStreak) : acc.longestStreak;
+
+      return {
+        currentStreak,
+        longestStreak
+      };
+    },
+    { currentStreak: 0, longestStreak: 0 }
+  );
+
+  const reversedHistogram = [...tagHistogram].reverse().slice(1);
+  const currentStreak = findIndex(reversedHistogram, bin => bin.length === 0);
+
+  return { longestStreak, currentStreak };
+};
+
+const ChainGraph = ({ tagHistogram, width }) => {
+  const height = 8;
 
   // we don't want lines with less than TICK_PX_WIDTH
   const targetWidth = clamp(tagHistogram.length, 0, width / TICK_PX_WIDTH);
@@ -66,36 +92,40 @@ const ChainGraph = ({ events, match, width, startDate, endDate }) => {
   );
 };
 
-// TODO: current streak: xx day(s)
-// TODO: hover with info
-const Chain = ({ events, match, width, editable, startDate, endDate, onChangeMatch, onDelete }) => (
-  <div className="chain">
-    <div className="chain__content">
-      <div className="chain__remove">
-        {match && <i className="fa fa-times" onClick={onDelete} />}
-      </div>
-      <div className="chain__input-wrapper">
-        <Input
-          editable={editable !== undefined ? editable : true}
-          text={match}
-          onSubmit={onChangeMatch}
-          formClassName="chain__input-form"
-          className="chain__input"
-          placeholder="Type @tag to make a graph"
-        />
-      </div>
-      <div className="chain__graph-wrapper">
-        {match &&
-          <ChainGraph
-            events={events}
-            match={match}
-            width={Math.max(0, width - 10 - 10)}
-            startDate={startDate}
-            endDate={endDate}
-          />}
+const Chain = ({ events, match, width, editable, startDate, endDate, onChangeMatch, onDelete }) => {
+  const tagHistogram = match && calculateHistogram({ events, match, startDate, endDate });
+  const { currentStreak, longestStreak } = match ? calculateLongestStreak({ tagHistogram }) : {};
+
+  return (
+    <div className="chain">
+      <div className="chain__content">
+        <div className="chain__remove">
+          {match && <i className="fa fa-times" onClick={onDelete} />}
+        </div>
+
+        <div className="chain__stats">
+          {match &&
+            <span>
+              {currentStreak === longestStreak ? `${currentStreak}d` : `${currentStreak}d / ${longestStreak}d`}
+            </span>}
+        </div>
+
+        <div className="chain__input-wrapper">
+          <Input
+            editable={editable !== undefined ? editable : true}
+            text={match}
+            onSubmit={onChangeMatch}
+            formClassName="chain__input-form"
+            className="chain__input"
+            placeholder="Type @tag to make a graph"
+          />
+        </div>
+        <div className="chain__graph-wrapper">
+          {match && <ChainGraph width={Math.max(0, width - 10 - 10)} tagHistogram={tagHistogram} />}
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default Chain;
