@@ -163,7 +163,7 @@ export const parseEvent = (event, options) => {
 };
 
 export const parseEvents = (events, options) => ({
-  new: events.filter(({ status }) => status === 'confirmed').reduce((acc, event) => {
+  new: events.filter(({ status, summary }) => status === 'confirmed' && !!summary).reduce((acc, event) => {
     const parsed = parseEvent(event, options);
     acc[parsed.id] = parsed;
     return acc;
