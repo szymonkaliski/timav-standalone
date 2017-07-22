@@ -19,7 +19,7 @@ import Settings from './components/settings';
 import Sidebar from './components/sidebar';
 
 import { refreshOauth2Token } from './services/google-calendar';
-import { setToken, routeTo, resetTokenAndRelatedSettings } from './actions';
+import { setToken, routeTo, resetTokenAndRelatedSettings, resetEvents } from './actions';
 
 const DB_PATH = path.join(remote.app.getPath('userData'), 'timav.db');
 
@@ -29,7 +29,11 @@ const store = createStore(reducer, initialStore, compose(applyMiddleware(thunk),
 
 // access store from console for debug
 if (isDebug) {
-  window.getStoreState = () => store.getState().toJS();
+  window.debug = {
+    getStoreState: () => store.getState().toJS(),
+    resetEvents: () => store.dispatch(resetEvents()),
+    resetAll: () => store.dispatch(resetTokenAndRelatedSettings())
+  };
 }
 
 const ROUTES = {
@@ -65,9 +69,7 @@ class App extends Component {
   renderDownloadingOverlay() {
     return (
       <div className="downloading-overlay">
-        <div className="downloading-overlay__text">
-          Downloading events...
-        </div>
+        <div className="downloading-overlay__text">Downloading events...</div>
       </div>
     );
   }

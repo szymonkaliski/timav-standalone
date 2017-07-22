@@ -1,5 +1,5 @@
 import formatCurrency from 'format-currency';
-import dateformat from 'dateformat';
+import moment from 'moment';
 
 export const isDebug = process.env.NODE_ENV === 'debug';
 
@@ -24,8 +24,8 @@ export const maxDate = (a, b) => (a > b ? a : b);
 
 export const stringifyMilliseconds = milliseconds => `${(milliseconds / (1000 * 60 * 60)).toFixed(1)}h`;
 
-export const stringifyDate = date => dateformat(date, 'yyyy-mm-dd');
-export const stringifyDateShort = date => dateformat(date, 'mm/dd');
+export const stringifyDate = date => moment(date).format('YYYY-MM-DD');
+export const stringifyDateShort = date => moment(date).format('YY/MM/DD');
 
 export const comparator = prop => (a, b) => b[prop] - a[prop];
 

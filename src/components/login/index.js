@@ -28,8 +28,6 @@ class Login extends Component {
 
     const authUrl = getAuthUrl(oauth2Client);
 
-    console.log({ authUrl });
-
     authWindow.loadURL(authUrl);
 
     const handleCallback = url => {

@@ -32,6 +32,8 @@ class Chains extends Component {
     const startDate = events.reduce((acc, { start }) => minDate(acc, start), new Date());
     const endDate = new Date();
 
+    console.log('dim', dimensions)
+
     return (
       <Measure onMeasure={this.onMeasure}>
         <div className="chains">

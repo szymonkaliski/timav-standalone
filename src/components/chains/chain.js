@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import classNames from 'classnames';
 import findIndex from 'lodash.findindex';
 import { histogram } from 'd3-array';
@@ -59,38 +59,55 @@ const calculateLongestStreak = ({ tagHistogram }) => {
   return { longestStreak, currentStreak };
 };
 
-const ChainGraph = ({ tagHistogram, width }) => {
-  const height = 8;
+class ChainGraph extends Component {
+  componentDidMount() {
+    this.drawCanvas();
+  }
 
-  // we don't want lines with less than TICK_PX_WIDTH
-  const targetWidth = clamp(tagHistogram.length, 0, width / TICK_PX_WIDTH);
-  const clampedTagHistogram = tagHistogram.slice(-targetWidth);
+  componentDidUpdate() {
+    this.drawCanvas();
+  }
 
-  const scale = scaleTime()
-    .domain([clampedTagHistogram[0].x0, clampedTagHistogram[clampedTagHistogram.length - 1].x1])
-    .range([0, width]);
+  drawCanvas() {
+    const ctx = this.canvas.getContext('2d');
 
-  return (
-    <svg width={width} height={height} className="chain__graph">
-      {clampedTagHistogram.map(tagBin => {
-        const width = Math.floor(scale(tagBin.x1)) - Math.floor(scale(tagBin.x0));
+    const { width, tagHistogram } = this.props;
+    const height = 8;
 
-        return (
-          <rect
-            key={tagBin.x0}
-            x={Math.floor(scale(tagBin.x0))}
-            y={0}
-            width={width}
-            height={height}
-            className={classNames('chain__graph-bar', {
-              'chain__graph-bar--filled': tagBin.length > 0
-            })}
-          />
-        );
-      })}
-    </svg>
-  );
-};
+    // we don't want lines with less than TICK_PX_WIDTH
+    const targetWidth = clamp(tagHistogram.length, 0, width / TICK_PX_WIDTH);
+    const clampedTagHistogram = tagHistogram.slice(-targetWidth);
+
+    const scale = scaleTime()
+      .domain([clampedTagHistogram[0].x0, clampedTagHistogram[clampedTagHistogram.length - 1].x1])
+      .range([0, width]);
+
+    ctx.fillStyle = '#E0E0E0';
+    ctx.fillRect(0, 0, width, height);
+
+    clampedTagHistogram.forEach(tagBin => {
+      const width = Math.floor(scale(tagBin.x1)) - Math.floor(scale(tagBin.x0));
+      const x = Math.floor(scale(tagBin.x0));
+      const y = 0;
+      const w = width;
+      const h = height;
+
+      if (tagBin.length > 0) {
+        ctx.fillStyle = '#333';
+        ctx.fillRect(x, y, w, h);
+      }
+    });
+  }
+
+  shouldComponentUpdate(nextProps) {
+    return this.props.width !== nextProps.width;
+  }
+
+  render() {
+    const height = 8;
+    return <canvas ref={ref => (this.canvas = ref)} width={this.props.width} height={height} />;
+  }
+}
 
 const Chain = ({ events, match, width, editable, startDate, endDate, onChangeMatch, onDelete }) => {
   const tagHistogram = match && calculateHistogram({ events, match, startDate, endDate });

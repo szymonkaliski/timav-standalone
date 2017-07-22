@@ -142,6 +142,11 @@ export const parseProject = (title, options) => {
   return { project, tags };
 };
 
+const parseToTimezoneIndependentDate = args => {
+  const dateString = `${(args.dateTime || args.date).split('+')[0]}+08:00`;
+  return new Date(dateString);
+};
+
 export const parseEvent = (event, options) => {
   // full-day events become markers
   const isMarker =
@@ -150,8 +155,12 @@ export const parseEvent = (event, options) => {
     event.start.date.length === FULL_DAY_EVENT_DATE_LENGTH &&
     event.end.date.length === FULL_DAY_EVENT_DATE_LENGTH;
 
-  const start = new Date(event.start.dateTime || event.start.date);
-  const end = new Date(event.end.dateTime || event.end.date);
+  const start = parseToTimezoneIndependentDate(event.start);
+  const end = parseToTimezoneIndependentDate(event.end);
+
+  if (event.summary === '@health(meditation)') {
+    console.log(event.start, event.end, start, end);
+  }
 
   const duration = !isMarker ? end - start : 0;
   const id = event.id;
