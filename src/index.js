@@ -14,6 +14,7 @@ import { connect, Provider } from 'react-redux';
 import reducer from './reducers';
 
 import Chains from './components/chains';
+import Focus from './components/focus';
 import Projects from './components/projects';
 import Settings from './components/settings';
 import Sidebar from './components/sidebar';
@@ -39,6 +40,7 @@ if (isDebug) {
 const ROUTES = {
   projects: Projects,
   chains: Chains,
+  focus: Focus,
   settings: Settings
 };
 

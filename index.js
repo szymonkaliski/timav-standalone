@@ -35,8 +35,9 @@ const createWindow = () => {
       label: 'Window',
       submenu: [
         { label: 'Projects', accelerator: 'CmdOrCtrl+1', click: makeRouteToCallback('projects') },
-        { label: 'Chains', accelerator: 'CmdOrCtrl+2', click: makeRouteToCallback('chains') },
-        { label: 'Settings', accelerator: 'CmdOrCtrl+3', click: makeRouteToCallback('settings') },
+        { label: 'Focus', accelerator: 'CmdOrCtrl+2', click: makeRouteToCallback('focus') },
+        { label: 'Chains', accelerator: 'CmdOrCtrl+3', click: makeRouteToCallback('chains') },
+        { label: 'Settings', accelerator: 'CmdOrCtrl+4', click: makeRouteToCallback('settings') },
         { type: 'separator' },
         { role: 'close' },
         { role: 'minimize' },

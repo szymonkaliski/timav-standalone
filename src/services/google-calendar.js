@@ -158,10 +158,6 @@ export const parseEvent = (event, options) => {
   const start = parseToTimezoneIndependentDate(event.start);
   const end = parseToTimezoneIndependentDate(event.end);
 
-  if (event.summary === '@health(meditation)') {
-    console.log(event.start, event.end, start, end);
-  }
-
   const duration = !isMarker ? end - start : 0;
   const id = event.id;
   const note = event.description;

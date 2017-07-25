@@ -17,6 +17,7 @@ const Sidebar = ({ routeTo, currentRoute }) => (
   <div className="sidebar">
     <div className="sidebar__items">
       <SidebarItem active={currentRoute === 'projects'} onClick={() => routeTo('projects')} icon="bars" />
+      <SidebarItem active={currentRoute === 'focus'} onClick={() => routeTo('focus')} icon="star-o" />
       <SidebarItem active={currentRoute === 'chains'} onClick={() => routeTo('chains')} icon="link" />
       <SidebarItem active={currentRoute === 'settings'} onClick={() => routeTo('settings')} icon="cog" />
     </div>

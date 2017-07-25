@@ -6,6 +6,7 @@ import { timeDay, timeWeek, timeMonth } from 'd3-time';
 import { get } from 'lodash';
 
 import { prop, stringifyMilliseconds, stringifyDateShort, stringifyCash } from '../../utils';
+import { GridY, GridX, AxisY, AxisX } from '../chart-utils';
 
 const durationInDays = duration => Math.ceil(duration / (1000 * 60 * 60) / 24);
 
@@ -19,58 +20,6 @@ const spreadToTimeScale = ({ start, end }) => {
   } else {
     return timeMonth;
   }
-};
-
-const GridY = ({ scale, ticks, width = 10 }) => {
-  return (
-    <g>
-      {ticks.map(tick => {
-        const y = scale(tick);
-        return <line key={tick} x1={0} x2={width} y1={y} y2={y} className="project-detail__chart-grid-y-tick" />;
-      })}
-    </g>
-  );
-};
-
-const GridX = ({ scale, ticks, height = 10 }) => {
-  return (
-    <g>
-      {ticks.map(tick => {
-        const x = scale(tick);
-        return <line key={tick} x1={x} x2={x} y1={0} y2={height} className="project-detail__chart-grid-x-tick" />;
-      })}
-    </g>
-  );
-};
-
-const AxisX = ({ scale, ticks }) => {
-  return (
-    <g>
-      {ticks.map(tick => {
-        const x = scale(tick);
-        return (
-          <text key={tick} x={x} y={0} className="project-detail__chart-axis-x-tick">
-            {stringifyDateShort(tick)}
-          </text>
-        );
-      })}
-    </g>
-  );
-};
-
-const AxisY = ({ scale, ticks }) => {
-  return (
-    <g>
-      {ticks.slice(1).map(tick => {
-        const y = scale(tick);
-        return (
-          <text key={tick} x={0} y={y + 3} className="project-detail__chart-axis-y-tick">
-            {stringifyMilliseconds(tick)}
-          </text>
-        );
-      })}
-    </g>
-  );
 };
 
 const Markers = ({ scale, height, project, currencySymbol }) => {
@@ -132,14 +81,24 @@ const Chart = ({ width, height, project, currencySymbol }) => {
       <path d={path} className="project-detail__chart-path" />
       <Markers scale={scaleX} height={height} project={project} currencySymbol={currencySymbol} />
 
-      <GridX scale={scaleX} ticks={ticks} height={height} />
-      <GridY scale={scaleY} ticks={scaleY.ticks()} width={width} />
+      <GridX scale={scaleX} ticks={ticks} height={height} className="project-detail__chart-grid-x-tick" />
+      <GridY scale={scaleY} ticks={scaleY.ticks()} width={width} className="project-detail__chart-grid-y-tick" />
 
       <g transform={`translate(0, ${height - 6})`}>
-        <AxisX scale={scaleX} ticks={scaleX.ticks(width / 80)} />
+        <AxisX
+          scale={scaleX}
+          ticks={scaleX.ticks(width / 80)}
+          className="project-detail__chart-axis-x-tick"
+          stringifyFn={stringifyDateShort}
+        />
       </g>
 
-      <AxisY scale={scaleY} ticks={scaleY.ticks()} />
+      <AxisY
+        scale={scaleY}
+        ticks={scaleY.ticks()}
+        className="project-detail__chart-axis-y-tick"
+        stringifyFn={stringifyMilliseconds}
+      />
     </svg>
   );
 };

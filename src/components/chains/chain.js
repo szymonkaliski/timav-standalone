@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import classNames from 'classnames';
 import findIndex from 'lodash.findindex';
 import { histogram } from 'd3-array';
 import { scaleTime } from 'd3-scale';

@@ -1,0 +1,43 @@
+.focus__content {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.focus__chart-wrapper {
+  height: 100%;
+}
+
+.focus__chart {
+  margin: 10px;
+}
+
+.focus__chart-path {
+  stroke: #333;
+  stroke-weight: 3px;
+  fill: none;
+}
+
+.focus__chart-total-time-path {
+  stroke-dasharray: 10px;
+}
+
+.focus__chart-grid-x-tick,
+.focus__chart-grid-y-tick {
+  stroke: darken(#333, 10%);
+  opacity: 0.2;
+  stroke-dasharray: 2px;
+}
+
+.focus__chart-axis-x-tick,
+.focus__chart-axis-y-tick {
+  font-size: 11px;
+  font-weight: 100;
+  fill: darken(#333, 10%);
+  opacity: 0.8;
+}
+
+.focus__chart-axis-x-tick {
+  text-anchor: middle;
+}
+
