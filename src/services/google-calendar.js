@@ -143,8 +143,11 @@ export const parseProject = (title, options) => {
 };
 
 const parseToTimezoneIndependentDate = args => {
-  const dateString = `${(args.dateTime || args.date).split('+')[0]}+08:00`;
-  return new Date(dateString);
+  if (args.date) {
+    return new Date(args.date);
+  }
+
+  return new Date(`${args.dateTime.split('+')[0]}+08:00`);
 };
 
 export const parseEvent = (event, options) => {

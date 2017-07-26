@@ -49,7 +49,10 @@ export default (state, action) => {
   }
 
   if (action.type === 'RESET_EVENTS') {
-    state = state.delete('events');
+    state = state
+      .delete('isDownloadingEvents')
+      .delete('syncToken')
+      .delete('events');
   }
 
   if (action.type === 'EVENTS_DOWNLOAD_STARTED') {
