@@ -22,64 +22,10 @@ const avgProp = (arr = [], key) => {
   return arr.map(prop(key)).reduce((a, b) => a + b, 0) / arr.length;
 };
 
-const FocusChart = ({ width, height, events }) => {
-  const startDate = events[0].start;
-  const endDate = events[events.length - 1].end;
-
-  const margin = 26;
-
-  const scaleX = scaleTime().domain([startDate, endDate]).range([margin, width - margin]).nice();
-  const scaleY = scaleLinear().domain([0, 1]).range([height - margin, margin]).nice();
-
-  const histogramScale = scaleTime().domain([startDate, endDate]).nice(timeDay);
-  const histogramTicks = histogramScale.ticks(timeDay, 1);
-
-  const calculateHistogram = histogram().value(prop('start')).domain(scaleX.domain()).thresholds(histogramTicks);
-
-  const eventsHistogram = calculateHistogram(events);
-
-  const focusHistogram = eventsHistogram
-    // .slice(1, eventsHistogram.length - 1)
-    .slice(1)
-    .map(bin => {
-      const durationTotal = bin.reduce((acc, { duration }) => acc + duration, 0);
-      const durationBin = bin.length > 0 ? bin[bin.length - 1].end.getTime() - bin[0].start.getTime() : 0;
-
-      return {
-        start: bin.x0,
-        end: bin.x1,
-        durationTotal,
-        durationPercent: durationTotal / (8 * 60 * 60 * 1000),
-        durationBin,
-        focusPercent: durationTotal > 0 && durationBin > 0 ? durationTotal / durationBin : 0,
-        bin
-      };
-    });
-
-  const nestedHistogram = nest()
-    .key(d => moment(d.start).format('YYYY-MM'))
-    .rollup(d => ({
-      start: d[0].start,
-      bins: d,
-      durationPercent: avgProp(d, 'durationPercent'),
-      focusPercent: avgProp(d, 'focusPercent')
-    }))
-    .entries(focusHistogram.filter(d => d.focusPercent > 0))
-    .map(prop('value'));
-
+const FocusChart = ({ width, height, scaleX, scaleY, histogram }) => {
   const calculatePath = key => line().x(d => scaleX(d.start)).y(d => scaleY(d[key]));
-  const pathFocusPercent = calculatePath('focusPercent')(nestedHistogram);
-  const pathTotalTime = calculatePath('durationPercent')(nestedHistogram);
-
-  // TODO: add legend
-  // const calcAverageProp = key => {
-  //   return focusHistogram.map(prop(key)).filter(_ => _ > 0).reduce((a, b) => a + b, 0) / focusHistogram.length;
-  // };
-
-  // const averageFocusPercent = calcAverageProp('focusPercent');
-  // const averageDurationPercent = calcAverageProp('durationPercent');
-
-  // console.log({ averageFocusPercent, averageDurationPercent });
+  const pathFocusPercent = calculatePath('focusPercent')(histogram);
+  const pathTotalTime = calculatePath('durationPercent')(histogram);
 
   return (
     <svg width={width} height={height} className="focus__chart">
@@ -129,16 +75,92 @@ class Focus extends Component {
     const { dimensions } = this.state;
     const { events } = this.props;
 
-    const margin = 20;
+    const chartMargin = 20;
 
-    const width = Math.floor(dimensions.width) - margin;
-    const height = Math.floor(dimensions.height) - margin;
+    const width = Math.floor(dimensions.width) - chartMargin;
+    const height = Math.floor(dimensions.height) - chartMargin;
+
+    const startDate = events[0].start;
+    const endDate = events[events.length - 1].end;
+
+    const margin = 26;
+
+    const scaleX = scaleTime().domain([startDate, endDate]).range([margin, width - margin]).nice();
+    const scaleY = scaleLinear().domain([0, 1]).range([height - margin, margin]).nice();
+
+    const histogramScale = scaleTime().domain([startDate, endDate]).nice(timeDay);
+    const histogramTicks = histogramScale.ticks(timeDay, 1);
+
+    const calculateHistogram = histogram().value(prop('start')).domain(scaleX.domain()).thresholds(histogramTicks);
+
+    const eventsHistogram = calculateHistogram(events);
+
+    const focusHistogram = eventsHistogram
+      // .slice(1, eventsHistogram.length - 1)
+      .slice(1)
+      .map(bin => {
+        const durationTotal = bin.reduce((acc, { duration }) => acc + duration, 0);
+        const durationBin = bin.length > 0 ? bin[bin.length - 1].end.getTime() - bin[0].start.getTime() : 0;
+
+        return {
+          start: bin.x0,
+          end: bin.x1,
+          durationTotal,
+          durationPercent: durationTotal / (8 * 60 * 60 * 1000),
+          durationBin,
+          focusPercent: durationTotal > 0 && durationBin > 0 ? durationTotal / durationBin : 0,
+          bin
+        };
+      });
+
+    const nestedHistogram = nest()
+      .key(d => moment(d.start).format('YYYY-MM'))
+      .rollup(d => ({
+        start: d[0].start,
+        bins: d,
+        durationPercent: avgProp(d, 'durationPercent'),
+        focusPercent: avgProp(d, 'focusPercent')
+      }))
+      .entries(focusHistogram.filter(d => d.focusPercent > 0))
+      .map(prop('value'));
+
+    const calcAverageProp = key => {
+      return focusHistogram.map(prop(key)).filter(_ => _ > 0).reduce((a, b) => a + b, 0) / focusHistogram.length;
+    };
+
+    const averageFocusPercent = calcAverageProp('focusPercent');
+    const averageDurationPercent = calcAverageProp('durationPercent');
 
     return (
       <div className="focus__content">
+        <div className="focus__label">
+          <div className="focus__label-wrapper">
+            <svg width={40} height={10} className="focus__label-chart-label">
+              <path d="M0 5 L40 5" className="focus__chart-path focus__chart-focus-duration-path" />
+            </svg>
+
+            <span className="focus__label-text">average daily focus</span>
+            <span className="focus__label-value">
+              {stringifyPercent(averageFocusPercent)}
+            </span>
+          </div>
+
+          <div className="focus__label-wrapper">
+            <svg width={40} height={10} className="focus__label-chart-label">
+              <path d="M0 5 L40 5" className="focus__chart-path focus__chart-total-time-path" />
+            </svg>
+
+            <span className="focus__label-text">average daily time</span>
+            <span className="focus__label-value">
+              {stringifyPercent(averageDurationPercent)}
+            </span>
+          </div>
+        </div>
+
         <Measure onMeasure={this.onMeasure}>
           <div className="focus__chart-wrapper">
-            {width > 0 && <FocusChart width={width} height={height} events={events} />}
+            {width > 0 &&
+              <FocusChart width={width} height={height} scaleX={scaleX} scaleY={scaleY} histogram={nestedHistogram} />}
           </div>
         </Measure>
       </div>
