@@ -49,10 +49,7 @@ export default (state, action) => {
   }
 
   if (action.type === 'RESET_EVENTS') {
-    state = state
-      .delete('isDownloadingEvents')
-      .delete('syncToken')
-      .delete('events');
+    state = state.delete('isDownloadingEvents').delete('syncToken').delete('events');
   }
 
   if (action.type === 'EVENTS_DOWNLOAD_STARTED') {
@@ -90,6 +87,19 @@ export default (state, action) => {
 
   if (action.type === 'REMOVE_CHAIN') {
     state = state.deleteIn(['chains', action.payload.id]);
+  }
+
+  if (action.type === 'MOVE_CHAIN') {
+    // to move chain just swap it with neighbour one
+
+    const chainsSeq = state.get('chains').entrySeq();
+    const index = chainsSeq.findIndex(chain => chain[0] === action.payload.id);
+    const swapTo = chainsSeq.get(index + (action.payload.direction === 'UP' ? -1 : 1));
+    const swapFrom = state.getIn(['chains', action.payload.id]);
+
+    state = state
+      .setIn(['chains', swapTo[0]], swapFrom)
+      .setIn(['chains', action.payload.id], swapTo[1]);
   }
 
   if (action.type === 'ROUTE') {

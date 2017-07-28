@@ -5,11 +5,35 @@
 
 .chain {
   width: 100%;
+}
+
+.chain__wrapper {
+  display: flex;
   border-bottom: 1px solid darken(#EEE, 20%);
 
   &:hover {
     background: darken(#EEE, 10%);
   }
+}
+
+.chain__order-buttons {
+  margin-top: 11px;
+  margin-left: 12px;
+}
+
+.chain__order-button {
+  cursor: pointer;
+  color: lighten(#202020, 30%);
+  transition: color 200ms;
+
+  &:hover {
+    color: #202020;
+  }
+}
+
+.chain__order-button-disabled {
+  pointer-events: none;
+  color: lighten(#202020, 50%);
 }
 
 .chain__content {

@@ -166,3 +166,11 @@ export const removeChain = id => ({
     id
   }
 });
+
+export const moveChain = (id, direction) => ({
+  type: 'MOVE_CHAIN',
+  payload: {
+    id,
+    direction
+  }
+});
