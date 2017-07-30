@@ -16,6 +16,8 @@ import {
   stringifyTag
 } from '../../utils';
 
+const isTag = text => text.match(/^@/);
+
 const ProjectItem = ({ project, onClick, isSelected, currencySymbol }) => {
   return (
     <div>
@@ -32,21 +34,22 @@ const ProjectItem = ({ project, onClick, isSelected, currencySymbol }) => {
 
         {project.cash > 0 &&
           <div className="project-item__cash-h">
-            {stringifyCash(project.cash / (project.duration / (1000 * 60 * 60)))}{currencySymbol}/h
+            {stringifyCash(project.cash / (project.duration / (1000 * 60 * 60)))}
+            {currencySymbol}/h
           </div>}
 
         <div className="project-item__dates">
-          <span className="project-item__date-start">
-            {stringifyDate(project.start)}
-          </span>
+          <span className="project-item__date-start">{stringifyDate(project.start)}</span>
           —
-          <span className="project-item__date-end">
-            {stringifyDate(project.end)}
-          </span>
+          <span className="project-item__date-end">{stringifyDate(project.end)}</span>
         </div>
 
         <div className="project-item__tags">
-          {project.tags.slice(0, 3).map(({ tag }) => <span key={tag} className="project-item__tag">{tag}</span>)}
+          {project.tags.slice(0, 3).map(({ tag }) =>
+            <span key={tag} className="project-item__tag">
+              {tag}
+            </span>
+          )}
         </div>
       </div>
     </div>
@@ -72,7 +75,12 @@ class Projects extends Component {
     const selectedProject = projects.find(({ name }) => name === (args && args.projectName));
 
     const filteredProjects = projects.filter(
-      ({ name }) => (filterText ? name.toLowerCase().indexOf(filterText.toLowerCase()) >= 0 : true)
+      ({ name, tags }) =>
+        filterText
+          ? isTag(filterText)
+            ? tags.some(({ tag }) => tag.indexOf(filterText.replace('@', '')) >= 0)
+            : name.toLowerCase().indexOf(filterText.toLowerCase()) >= 0
+          : true
     );
 
     return (
@@ -88,7 +96,7 @@ class Projects extends Component {
           </div>
 
           <div className="project-list">
-            {filteredProjects.map(project => (
+            {filteredProjects.map(project =>
               <ProjectItem
                 isSelected={args && args.projectName === project.name}
                 key={project.name}
@@ -96,7 +104,7 @@ class Projects extends Component {
                 project={project}
                 currencySymbol={currencySymbol}
               />
-            ))}
+            )}
           </div>
         </div>
 
