@@ -147,7 +147,7 @@ const parseToTimezoneIndependentDate = args => {
     return new Date(args.date);
   }
 
-  return new Date(`${args.dateTime.split('+')[0]}+08:00`);
+  return new Date(`${args.dateTime.split('+')[0].replace(/-/g, '/').replace('T', ' ')}`);
 };
 
 export const parseEvent = (event, options) => {
