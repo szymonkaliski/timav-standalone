@@ -13,15 +13,15 @@ const render = () => {
   );
 };
 
-const reloadCSS = () => {
-  document.querySelectorAll('link').forEach(link => {
-    link.href = `${link.href}?t=${new Date().getTime()}`;
-  });
-};
-
 render();
 
-if (module.hot) {
+if (module.hot && process.env.NODE_ENV !== 'production') {
+  const reloadCSS = () => {
+    document.querySelectorAll('link').forEach(link => {
+      link.href = `${link.href}?t=${new Date().getTime()}`;
+    });
+  };
+
   module.hot.accept(render);
   module.hot.accept(reloadCSS);
 }
